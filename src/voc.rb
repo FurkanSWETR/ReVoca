@@ -13,7 +13,7 @@ class Voc
 
 	def get_id(llang, klang)
 		vocs = all()
-		i = vocs.index { |v| v[:llang] == llang && v[:klang] = klang }
+		i = vocs.index { |v| v[:llang] == llang && v[:klang] == klang }
 		i != nil ? vocs[i][:id] : nil
 	end
 
