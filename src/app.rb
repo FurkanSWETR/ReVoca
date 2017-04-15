@@ -6,11 +6,16 @@ token = ENV.fetch('BOT_TOKEN')
 base_uri = ENV.fetch('FIREBASE_URL')
 
 languageMenu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(English Español), %w(Русский Français)], one_time_keyboard: true)
+yes_no_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(YES), %w(NO)], one_time_keyboard: true)
+
 
 Telegram::Bot::Client.run(token) do |bot|
 
   new_klang = ""
   new_llang = ""
+  new_word = ""
+  new_translation = []
+  current_word_id = nil
 
   state = 'idle'
 
@@ -38,11 +43,21 @@ Telegram::Bot::Client.run(token) do |bot|
       end
 
     when '/add'
-      bot.api.send_message(chat_id: message.chat.id, text: 'New!')
+      bot.api.send_message(chat_id: message.chat.id, text: 'Enter new word: ')
+      state = 'add_1'
+
     when '/word'
-      bot.api.send_message(chat_id: message.chat.id, text: 'New!')
+      w = fb.current.words.get()
+      current_word_id = w[:id]
+      bot.api.send_message(chat_id: message.chat.id, text: 'Please, translate this word for me: ' + w[:word].upcase)
+      state = 'word_1'
+
     when '/translation'
-      bot.api.send_message(chat_id: message.chat.id, text: 'New!')
+      w = fb.current.words.get_translation()
+      current_word_id = w[:id]
+      bot.api.send_message(chat_id: message.chat.id, text: 'Please, translate this word for me: ' + w[:translation].upcase)
+      state = 'translation_1'
+
     when '/translate'
       bot.api.send_message(chat_id: message.chat.id, text: 'New!')
     when '/list'
@@ -65,12 +80,54 @@ Telegram::Bot::Client.run(token) do |bot|
         else
           bot.api.send_message(chat_id: message.chat.id, text: "You already have similar vocabulary. Why you would want another one?")
         end
+        new_llang = new_klang = nil
         state = 'idle'
 
       when 'switch_1'
         langs = message.text.split('-')
         fb.activate(fb.vocs.get_id(langs[0], langs[1]))
         bot.api.send_message(chat_id: message.chat.id, text: 'Successfully switched vocabulary.')
+        state = 'idle'
+
+      when 'add_1'
+        new_word = message.text
+        bot.api.send_message(chat_id: message.chat.id, text: 'Good, now enter translation: ')
+        state = 'add_2'
+
+      when 'add_2'
+        new_translation.push(message.text)
+        bot.api.send_message(chat_id: message.chat.id, text: 'Very well, want to add more translations?')
+        state = 'add_3'
+
+      when 'add_3'
+        case message.text
+        when 'YES'
+          bot.api.send_message(chat_id: message.chat.id, text: 'OK, here you go.')
+          state = 'add_2'
+        when 'NO'
+          fb.current.words.add({ word: new_word, translation: new_translation, created_at: Time.now})
+          bot.api.send_message(chat_id: message.chat.id, text: new_word + ' has been added.')
+          state = 'idle'
+          new_word = nil
+          new_translation = []
+        end
+
+      when 'word_1'
+        answer = message.text
+        if (fb.current.words.get_translation(current_word_id).index(answer) != nil)
+          bot.api.send_message(chat_id: message.chat.id, text: 'Correct. You\'re a star!')
+        else
+          bot.api.send_message(chat_id: message.chat.id, text: 'You\'re wrong. Keep training.')
+        end
+        state = 'idle'
+
+      when 'translation_1'
+        answer = message.text
+        if (fb.current.words.get(current_word_id) == answer)
+          bot.api.send_message(chat_id: message.chat.id, text: 'Correct. You\'re a star!')
+        else
+          bot.api.send_message(chat_id: message.chat.id, text: 'You\'re wrong. Keep training.')
+        end
         state = 'idle'
 
       when 'idle'

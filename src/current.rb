@@ -1,6 +1,6 @@
 require_relative 'word'
 
-class CurrentVoc
+class Current
 	@chat_id
 	@firebase
 
@@ -14,10 +14,15 @@ class CurrentVoc
 		@chat_id = chat_id
 		@firebase = firebase
 
-		@id = voc.id
-		@klang = voc.klang
-		@llang = voc.llang
+		@id = voc[:id]
+		@klang = voc[:klang]
+		@llang = voc[:llang]
 
-		@words = new Word(@chat_id, @id, @firebase)
+		@words = Word.new(@chat_id, @id, @firebase)
 	end
+
+	def words
+		@words
+	end
+
 end

@@ -18,7 +18,7 @@ class FB
 
 		@active = @firebase.get(@chat_id + "/active").body
 		@vocs = Voc.new(@chat_id, @firebase)
-		@current = @active ? Word.new(@chat_id, @firebase, @vocs.get(@active)) : nil
+		@current = @active ? Current.new(@chat_id, @firebase, @vocs.get(@active)) : nil
 
 		@@totalusers+=1
 	end
@@ -26,7 +26,7 @@ class FB
 	def activate(voc_id)
 		@firebase.set(@chat_id + "/active", voc_id)
 		@active = voc_id
-		@current = Word.new(@chat_id, @firebase, @vocs.get(@active))
+		@current = Current.new(@chat_id, @firebase, @vocs.get(@active))
 	end
 
 	def vocs
