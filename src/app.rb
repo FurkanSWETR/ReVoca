@@ -1,10 +1,9 @@
 require 'telegram/bot'
+require 'aws-sdk'
 
-AWS::S3::Base.establish_connection!(
- :bot_token   => ENV['BOT_TOKEN']
-)
+token = ENV.fetch('BOT_TOKEN')
 
-Telegram::Bot::Client.run(:bot_token) do |bot|
+Telegram::Bot::Client.run(token) do |bot|
   bot.listen do |message|
     case message.text
       when '/hello'
