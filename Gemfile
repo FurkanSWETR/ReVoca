@@ -6,3 +6,4 @@ ruby '2.4.0'
 # gem "rails"
 gem 'aws-sdk'
 gem 'telegram-bot-ruby'
+gem 'firebase'
