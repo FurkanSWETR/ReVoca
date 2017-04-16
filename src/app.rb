@@ -1,12 +1,13 @@
 require 'telegram/bot'
 require 'aws-sdk'
 require_relative 'fb'
+require_relative 'options'
 
 token = ENV.fetch('BOT_TOKEN')
 base_uri = ENV.fetch('FIREBASE_URL')
 
 remove_kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-languageMenu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(English Español), %w(Русский Français)], one_time_keyboard: true)
+languageMenu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [[Language.eng[0], Language.rus[1]], [Language.spa[2], Language.fra[3]]], one_time_keyboard: true)
 yes_no_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(YES NO)], one_time_keyboard: true)
 tick_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(Hourly Daily), %w(Weekly Never)], one_time_keyboard: true)
 
@@ -167,22 +168,30 @@ Telegram::Bot::Client.run(token) do |bot|
       state = fb.state.now(chat_id)
       case state
       when 'new_1'
-        fb.temp.llang(chat_id, message.text)
-        bot.api.send_message(chat_id: chat_id, text: 'Select a language you know:', reply_markup: languageMenu)
-        fb.state.set(chat_id, 'new_2')
+        if (Language.check(message.text))
+          fb.temp.llang(chat_id, message.text)
+          bot.api.send_message(chat_id: chat_id, text: 'Select a language you know:', reply_markup: languageMenu)
+          fb.state.set(chat_id, 'new_2')
+        else
+          bot.api.send_message(chat_id: chat_id, text: 'Please, use buttons or type correct language.', reply_markup: languageMenu)
+        end
         
       when 'new_2'
-        llang = fb.temp.llang(chat_id)
-        klang = message.text
-        if (fb.vocs.id(chat_id, {llang: llang, klang: klang}) == nil)
-          response = fb.vocs.create(chat_id, {llang: llang, klang: klang})
-          fb.vocs.activate(chat_id, response.body["name"])
-          fb.temp.clear(chat_id)
-          bot.api.send_message(chat_id: chat_id, text: "You've created " + llang + "-" + klang + " vocabulary. Add some words - it's empty now!", reply_markup: remove_kb)
+        if (Language.check(message.text))
+          llang = fb.temp.llang(chat_id)
+          klang = message.text
+          if (fb.vocs.id(chat_id, {llang: llang, klang: klang}) == nil)
+            response = fb.vocs.create(chat_id, {llang: llang, klang: klang})
+            fb.vocs.activate(chat_id, response.body["name"])
+            fb.temp.clear(chat_id)
+            bot.api.send_message(chat_id: chat_id, text: "You've created " + llang + "-" + klang + " vocabulary. Add some words - it's empty now!", reply_markup: remove_kb)
+          else
+            bot.api.send_message(chat_id: chat_id, text: "You already have similar vocabulary. Why you would want another one?")
+          end
+          fb.state.set(chat_id, 'idle')
         else
-          bot.api.send_message(chat_id: chat_id, text: "You already have similar vocabulary. Why you would want another one?")
+          bot.api.send_message(chat_id: chat_id, text: 'Please, use buttons or type correct language.', reply_markup: languageMenu)
         end
-        fb.state.set(chat_id, 'idle')
 
       when 'switch_1'
         langs = message.text.split('-')
