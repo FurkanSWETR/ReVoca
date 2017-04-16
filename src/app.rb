@@ -15,13 +15,13 @@ def help_text(state)
   case state
   when 'idle'
     "My name is Revoca. I can help you learn new languages.\n
-First you need to create a vocabulary using \/new comand. New vocabulary will automatically become active, but if you want to switch back, use \/switch.\n
-Empty vocabularies are boring: to add a new word type \/add.\n
-To train your vocabulary type \/word to get a random word in learning language or \/translation to get a translation. Then you'll be asked to translate it.\n
-To list the words from your vocabulary type \/list.\n
-To delete a vocabulary use \/delete.\n
-To change notification settings type \/notify and follow instructions.\n
-Hope you'll enjoy working with me. But let's keep it professional."
+    First you need to create a vocabulary using \/new comand. New vocabulary will automatically become active, but if you want to switch back, use \/switch.\n
+    Empty vocabularies are boring: to add a new word type \/add.\n
+    To train your vocabulary type \/word to get a random word in learning language or \/translation to get a translation. Then you'll be asked to translate it.\n
+    To list the words from your vocabulary type \/list.\n
+    To delete a vocabulary use \/delete.\n
+    To change notification settings type \/notify and follow instructions.\n
+    Hope you'll enjoy working with me. But let's keep it professional."
 
   when 'new_1', 'new_2'
     "You're in creating vocabulary sequence. Select language you want to learn, then select language you know. That's it.\n
@@ -74,14 +74,16 @@ Telegram::Bot::Client.run(token) do |bot|
           current = tfb.vocs.get(chat_id, fb.vocs.active(chat_id))
 
           w = tfb.vocs.words.get(chat_id, current[:id])
-          word = w[:word]
-          translations = tfb.vocs.words.translation(chat_id, current[:id], w[:id])
+          if (w)
+            word = w[:word]
+            translations = tfb.vocs.words.translation(chat_id, current[:id], w[:id])
 
-          text = current[:llang].capitalize + ": " + word + "\n"
-          text += current[:klang].capitalize + ": "
-          text += translations.map.with_index {|x, i| (i+1).to_s + ") " + x }.join("; ")
+            text = current[:llang].capitalize + ": " + word + "\n"
+            text += current[:klang].capitalize + ": "
+            text += translations.map.with_index {|x, i| (i+1).to_s + ") " + x }.join("; ")
 
-          bot.api.send_message(chat_id: n[:id], text: text)
+            bot.api.send_message(chat_id: n[:id], text: text)
+          end
         end
       end
 
