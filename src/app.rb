@@ -7,6 +7,7 @@ base_uri = ENV.fetch('FIREBASE_URL')
 
 languageMenu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(English Español), %w(Русский Français)], one_time_keyboard: true)
 yes_no_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(YES), %w(NO)], one_time_keyboard: true)
+tick_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(Hourly), %w(Daily), %(Weekly), %(Never)], one_time_keyboard: true)
 
 def help_text(state)
   case state
@@ -49,6 +50,7 @@ Telegram::Bot::Client.run(token) do |bot|
   new_klang = ""
   new_llang = ""
   new_word = ""
+  new_tick = 0
   new_translation = []
   current_word_id = nil
 
@@ -68,6 +70,7 @@ Telegram::Bot::Client.run(token) do |bot|
       new_klang = ""
       new_llang = ""
       new_word = ""
+      new_tick = 0
       new_translation = []
       current_word_id = nil
 
@@ -114,7 +117,8 @@ Telegram::Bot::Client.run(token) do |bot|
       bot.api.send_message(chat_id: message.chat.id, text: text)
 
     when '/notify'
-      bot.api.send_message(chat_id: message.chat.id, text: 'New!')
+      bot.api.send_message(chat_id: message.chat.id, text: 'First, how often you want my notifications: ', reply_markup: tick_menu)
+      state = 'notify_1'
 
     else
       case state
@@ -181,6 +185,38 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: message.chat.id, text: 'You\'re wrong. Keep training.')
         end
         state = 'idle'
+
+      when 'notify_1'
+        case message.text
+        when 'Hourly'
+          new_tick = 1
+        when 'Daily'
+          new_tick = 24
+        when 'Weekly'
+          new_tick = 168
+        when 'Never'
+          bot.api.send_message(chat_id: message.chat.id, text: 'Okay, no notification then.')
+          fb.change_notifications(nil, 0)
+          new_tick = 0
+          state = 'idle'
+        end
+        if new_tick != 0
+          bot.api.send_message(chat_id: message.chat.id, text: 'Now, how many ' + message.text[0..-3].downcase + 's you want between my notifications?')
+          state = 'notify_2'
+        end
+
+      when 'notify_2'
+        n = Integer(message.text) rescue nil
+        if (n && n.between?(0, 30))
+          bot.api.send_message(chat_id: message.chat.id, text: "Notification settings have been changed.")
+          t = Time.now
+          t = Time.new(t.year, t.month, t.day, t.hour)
+          fb.change_notifications(t, n * new_tick)
+          new_tick = 0
+          state = 'idle'
+        else
+          bot.api.send_message(chat_id: message.chat.id, text: "Something is wrong. I don't understand. Probably it'st not an integer, less than 0 or bigger than 30. Try again.")
+        end
 
       when 'idle'
         bot.api.send_message(chat_id: message.chat.id, text: "It's not a command. I don't understand you. I can help you with learning new words, but I'm not a chat-bot, you moron!")

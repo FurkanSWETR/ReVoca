@@ -29,6 +29,15 @@ class FB
 		@current = Current.new(@chat_id, @firebase, @vocs.get(@active))
 	end
 
+	def change_notifications(start_time, tick_hours)
+		if (tick_hours != 0)
+			@firebase.set("notifications/" + @chat_id + "/time", start_time)
+			@firebase.set("notifications/" + @chat_id + "/tick", tick_hours)
+		else
+			@firebase.set("notifications/" + @chat_id, nil)
+		end
+	end
+
 	def vocs
 		@vocs
 	end
