@@ -312,7 +312,7 @@ Telegram::Bot::Client.run(token) do |bot|
           hours = n * fb.temp.tick(chat_id)
           t = Time.now
           t = Time.new(t.year, t.month, t.day, t.hour) + (60*60*hours)
-          fb.notify.set(chat_id, {next: t, tick: n * hours})
+          fb.notify.set(chat_id, {next: t, tick: hours})
           fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
         else
