@@ -35,6 +35,10 @@ Hope you'll enjoy working with me. But let's keep it professional."
     "You're trying to switch vocabularies. Choose one from menu.\n
     If you want to cancel it, just type \/cancel"
 
+  when 'delete_1'
+    "You're trying to delete vocabulary. Choose one from menu.\n
+    If you want to cancel it, just type \/cancel"
+
   when 'word_1'
     "We are playing words. I give you a word, you give me a translation. Roger?\n
     If you want to cancel it, just type \/cancel"
@@ -123,6 +127,19 @@ Telegram::Bot::Client.run(token) do |bot|
         bot.api.send_message(chat_id: chat_id, text: 'Actually, you have no vocabularies yet. Better create one now.')
       end
 
+    when '/delete'
+      vocs = fb.vocs.all(chat_id)
+      if (vocs && vocs.length > 1)
+        vocs.map! { |v| Telegram::Bot::Types::KeyboardButton.new(text: v[:llang] + '-' + v[:klang]) }
+        markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: vocs)
+        bot.api.send_message(chat_id: chat_id, text: 'Select a vocabulary:', reply_markup: markup)
+        fb.state.set(chat_id, 'delete_1')
+      elsif vocs.length == 1
+        bot.api.send_message(chat_id: chat_id, text: "Sorry, you have just one vocabulary. You can't delete your last vocabulary.")
+      else
+        bot.api.send_message(chat_id: chat_id, text: 'Actually, you have no vocabularies yet. Better create one now.')
+      end
+
     when '/add'
       bot.api.send_message(chat_id: chat_id, text: 'Enter new word: ')
       fb.state.set(chat_id, 'add_1')
@@ -205,7 +222,19 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: chat_id, text: 'Successfully switched vocabulary.', reply_markup: remove_kb)
           fb.state.set(chat_id, 'idle')
         else
-          bot.api.send_message(chat_id: chat_id, text: "You don't have a vocabulary lke that.\nPlease use buttons, not keyboard.")
+          bot.api.send_message(chat_id: chat_id, text: "You don't have a vocabulary like that.\nPlease use buttons, not keyboard.")
+        end
+
+      when 'delete_1'
+        langs = message.text.split('-')
+        voc_id = fb.vocs.id(chat_id, {llang: langs[0], klang: langs[1]})
+        if (voc_id)
+          fb.vocs.delete(chat_id, voc_id)
+          fb.vocs.activate(chat_id, fb.vocs.all(chat_id)[0][:id])
+          bot.api.send_message(chat_id: chat_id, text: 'Successfully deleted vocabulary.', reply_markup: remove_kb)
+          fb.state.set(chat_id, 'idle')
+        else
+          bot.api.send_message(chat_id: chat_id, text: "You don't have a vocabulary like that.\nPlease use buttons, not keyboard.")
         end
 
       when 'add_1'

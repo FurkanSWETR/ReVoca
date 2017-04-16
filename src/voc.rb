@@ -37,6 +37,10 @@ class Voc
 		i != nil ? vocs[i][:id] : nil
 	end
 
+	def delete(chat_id, v_id)
+		@firebase.delete("users/" + chat_id + "/vocs/" + v_id)
+	end
+
 	def words
 		@words
 	end
