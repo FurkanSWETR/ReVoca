@@ -1,29 +1,43 @@
+require_relative 'word'
+
 class Voc
-	@chat_id
 	@firebase
+	@words
 
-	def initialize(chat_id,firebase)
-		@chat_id = chat_id
+	def initialize(firebase)
 		@firebase = firebase
+		@words = Word.new(@firebase)
 	end
 
-	def create(llang, klang)
-		@firebase.push(@chat_id + "/vocs", { :llang => llang, :klang => klang})
+	def create(chat_id, data)
+		@firebase.push("users/" + chat_id + "/vocs", data)
 	end
 
-	def get_id(llang, klang)
-		vocs = all()
-		i = vocs.index { |v| v[:llang] == llang && v[:klang] == klang }
-		i != nil ? vocs[i][:id] : nil
+	def active(chat_id)
+		@firebase.get("users/" + chat_id + "/active").body
 	end
 
-	def all()
-		vocs = @firebase.get(@chat_id + "/vocs").body.to_a
+	def activate(chat_id, voc_id)
+		@firebase.set("users/" + chat_id + "/active", voc_id)
+	end
+
+	def all(chat_id)
+		vocs = @firebase.get("users/" + chat_id + "/vocs").body.to_a
 		return vocs.map { |v| { id: v[0], llang: v[1]['llang'], klang: v[1]['klang']} }
 	end
 
-	def get(v_id)
-		v = @firebase.get(@chat_id + "/vocs/" + v_id).body
+	def get(chat_id, v_id)
+		v = @firebase.get("users/" + chat_id + "/vocs/" + v_id).body
 		return { id: v_id, llang: v['llang'], klang: v['klang']}
+	end
+
+	def id(chat_id, data)
+		vocs = all(chat_id)
+		i = vocs.index { |v| v[:llang] == data[:llang] && v[:klang] == data[:klang] }
+		i != nil ? vocs[i][:id] : nil
+	end
+
+	def words
+		@words
 	end
 end
