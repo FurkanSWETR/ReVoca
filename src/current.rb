@@ -25,4 +25,12 @@ class Current
 		@words
 	end
 
+	def llang
+		@llang
+	end
+
+	def klang
+		@klang
+	end
+
 end

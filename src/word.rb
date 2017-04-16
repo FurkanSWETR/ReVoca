@@ -14,7 +14,8 @@ class Word
 	end
 
 	def all()
-		@firebase.get(@chat_id + "/vocs/" + @v_id + "/words").body
+		words = @firebase.get(@chat_id + "/vocs/" + @v_id + "/words").body.to_a
+		return words.map { |w| { id: w[0], word: w[1]['word'], translation: w[1]['translation'].to_a, created_at: w[1]['created_at']}  }
 	end
 
 	def get(w_id = nil)
