@@ -307,7 +307,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
       when 'notify_2'
         n = Integer(message.text) rescue nil
-        if (n && n.between?(0, 30))
+        if (n && n.between?(1, 30))
           bot.api.send_message(chat_id: chat_id, text: "Notification settings have been changed.")
           hours = n * fb.temp.tick(chat_id)
           t = Time.now
@@ -316,7 +316,7 @@ Telegram::Bot::Client.run(token) do |bot|
           fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
         else
-          bot.api.send_message(chat_id: chat_id, text: "Something is wrong. I don't understand. Probably it'st not an integer, less than 0 or bigger than 30. Try again.")
+          bot.api.send_message(chat_id: chat_id, text: "Something is wrong. I don't understand. Probably it'st not an integer, less than 1 or bigger than 30. Try again.")
         end
 
       when 'idle'
