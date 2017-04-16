@@ -2,6 +2,7 @@ require 'firebase'
 require_relative 'voc'
 require_relative 'state'
 require_relative 'temp'
+require_relative 'notify'
 
 class FB
 	@@total_users = 0
@@ -10,22 +11,17 @@ class FB
 	@vocs
 	@state
 	@temp
+	@notify
 
 	def initialize(firebase_url)
 		@firebase = Firebase::Client.new(firebase_url)
+
 		@vocs = Voc.new(@firebase)
 		@state = State.new(@firebase)
 		@temp = Temp.new(@firebase)
+		@notify = Notify.new(@firebase)
 
-		@@total_users+=1
-	end
-
-	def set_notifications(chat_id, data = nil)
-		if (data)
-			@firebase.set("notifications/" + chat_id, data)
-		else
-			@firebase.delete("notifications/" + chat_id)
-		end
+		@@total_users += 1
 	end
 
 	def vocs
@@ -38,6 +34,10 @@ class FB
 
 	def temp
 		@temp
+	end
+
+	def notify
+		@notify
 	end
 
 	def total_users

@@ -5,9 +5,10 @@ require_relative 'fb'
 token = ENV.fetch('BOT_TOKEN')
 base_uri = ENV.fetch('FIREBASE_URL')
 
+remove_kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
 languageMenu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(English Español), %w(Русский Français)], one_time_keyboard: true)
-yes_no_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(YES), %w(NO)], one_time_keyboard: true)
-tick_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(Hourly), %w(Daily), %(Weekly), %(Never)], one_time_keyboard: true)
+yes_no_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(YES NO)], one_time_keyboard: true)
+tick_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(Hourly Daily), %w(Weekly Never)], one_time_keyboard: true)
 
 def help_text(state)
   case state
@@ -49,10 +50,46 @@ Telegram::Bot::Client.run(token) do |bot|
 
   fb = FB.new(base_uri)
 
+  thr = Thread.new {
+    tfb = FB.new(base_uri)
+    t = Time.now
+    tfb.notify.global(Time.new(t.year, t.month, t.day, t.hour))
+
+    loop do
+      notified = tfb.notify.all
+      notified.each do |n| 
+        chat_id = n[:id]
+        tick = n[:tick].to_i
+        next_time = Time.parse(n[:next])
+
+        if(next_time < Time.now)          
+          next_time += (60*60)*tick until next_time > Time.now
+          tfb.notify.set(chat_id, {next: next_time, tick: tick})
+
+          current = tfb.vocs.get(chat_id, fb.vocs.active(chat_id))
+
+          w = tfb.vocs.words.get(chat_id, current[:id])
+          word = w[:word]
+          translations = tfb.vocs.words.translation(chat_id, current[:id], w[:id])
+
+          text = current[:llang].capitalize + ": " + word + "\n"
+          text += current[:klang].capitalize + ": "
+          text += translations.map.with_index {|x, i| (i+1).to_s + ") " + x }.join("; ")
+
+          bot.api.send_message(chat_id: n[:id], text: text)
+        end
+      end
+
+      global_next = tfb.notify.global + 60*60
+      tfb.notify.global(global_next)
+      sleep(global_next - Time.now + 1)
+    end
+  }
+
   bot.listen do |message| 
     chat_id = message.chat.id.to_s
     current_id = fb.vocs.active(chat_id)
-    current = current_id ? fb.vocs.get(chat_id, fb.vocs.active(chat_id)) : nil
+    current = current_id ? fb.vocs.get(chat_id, current_id) : nil
 
     case message.text
     when '/start'
@@ -63,7 +100,7 @@ Telegram::Bot::Client.run(token) do |bot|
       bot.api.send_message(chat_id: chat_id, text: help_text(fb.state.now(chat_id)))
 
     when '/admin'
-      bot.api.send_message(chat_id: chat_id, text: fb.total_users)
+      bot.api.send_message(chat_id: chat_id, text: thr.status.to_s != "" ? thr.status.to_s : "Unknown")
 
     when '/cancel'
       fb.state.set(chat_id, 'idle')
@@ -91,15 +128,23 @@ Telegram::Bot::Client.run(token) do |bot|
 
     when '/word'
       w = fb.vocs.words.get(chat_id, current[:id])
-      fb.temp.cw_id(chat_id, w[:id])
-      bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ current[:klang] + ': ' + w[:word])
-      fb.state.set(chat_id, 'word_1')
+      if(w)
+        fb.temp.cw_id(chat_id, w[:id])
+        bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ current[:klang] + ': ' + w[:word])
+        fb.state.set(chat_id, 'word_1')
+      else
+        bot.api.send_message(chat_id: chat_id, text: "I don't think you have any words. Please add some.")
+      end
 
     when '/translation'
       w = fb.vocs.words.translation(chat_id, current[:id])
-      fb.temp.cw_id(chat_id, w[:id])
-      bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ current[:llang] + ': ' + w[:translation])
-      fb.state.set(chat_id, 'translation_1')
+      if(w)
+        fb.temp.cw_id(chat_id, w[:id])
+        bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ current[:llang] + ': ' + w[:translation])
+        fb.state.set(chat_id, 'translation_1')
+      else
+        bot.api.send_message(chat_id: chat_id, text: "I don't think you have any words. Please add some.")
+      end
 
     when '/translate'
       bot.api.send_message(chat_id: chat_id, text: "Sorry, it's not implemented yet.")
@@ -111,8 +156,12 @@ Telegram::Bot::Client.run(token) do |bot|
       bot.api.send_message(chat_id: chat_id, text: text)
 
     when '/notify'
-      bot.api.send_message(chat_id: chat_id, text: 'First, how often you want my notifications: ', reply_markup: tick_menu)
-      fb.state.set(chat_id, 'notify_1')
+      if(current)
+        bot.api.send_message(chat_id: chat_id, text: 'First, how often you want my notifications: ', reply_markup: tick_menu)
+        fb.state.set(chat_id, 'notify_1')
+      else
+        bot.api.send_message(chat_id: chat_id, text: "No, no, no. You don't even have an active vocabulary!")
+      end
 
     else
       state = fb.state.now(chat_id)
@@ -129,7 +178,7 @@ Telegram::Bot::Client.run(token) do |bot|
           response = fb.vocs.create(chat_id, {llang: llang, klang: klang})
           fb.vocs.activate(chat_id, response.body["name"])
           fb.temp.clear(chat_id)
-          bot.api.send_message(chat_id: chat_id, text: "You've created " + llang + "-" + klang + " vocabulary. Add some words - it's empty now!")
+          bot.api.send_message(chat_id: chat_id, text: "You've created " + llang + "-" + klang + " vocabulary. Add some words - it's empty now!", reply_markup: remove_kb)
         else
           bot.api.send_message(chat_id: chat_id, text: "You already have similar vocabulary. Why you would want another one?")
         end
@@ -138,7 +187,7 @@ Telegram::Bot::Client.run(token) do |bot|
       when 'switch_1'
         langs = message.text.split('-')
         fb.vocs.activate(chat_id, fb.vocs.id(chat_id, {llang: langs[0], klang: langs[1]}))
-        bot.api.send_message(chat_id: chat_id, text: 'Successfully switched vocabulary.')
+        bot.api.send_message(chat_id: chat_id, text: 'Successfully switched vocabulary.', reply_markup: remove_kb)
         fb.state.set(chat_id, 'idle')
 
       when 'add_1'
@@ -154,13 +203,13 @@ Telegram::Bot::Client.run(token) do |bot|
       when 'add_3'
         case message.text.upcase
         when 'YES'
-          bot.api.send_message(chat_id: chat_id, text: 'OK, here you go.')
+          bot.api.send_message(chat_id: chat_id, text: 'OK, here you go.', reply_markup: remove_kb)
           fb.state.set(chat_id, 'add_2')
         when 'NO'
           word = fb.temp.word(chat_id)
           translation = fb.temp.translation(chat_id)
           fb.vocs.words.add(chat_id, current[:id], { word: word, translation: translation, created_at: Time.now})
-          bot.api.send_message(chat_id: chat_id, text: word + ' has been added.')
+          bot.api.send_message(chat_id: chat_id, text: word + ' has been added.', reply_markup: remove_kb)
           fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
         end
@@ -188,8 +237,8 @@ Telegram::Bot::Client.run(token) do |bot|
       when 'notify_1'
         case message.text
         when 'Never'
-          bot.api.send_message(chat_id: chat_id, text: 'Okay, no notification then.')
-          fb.set_notifications(chat_id)
+          bot.api.send_message(chat_id: chat_id, text: 'Okay, no notification then.', reply_markup: remove_kb)
+          fb.notify.stop(chat_id)
           fb.state.set(chat_id, 'idle')
         else
           case message.text
@@ -200,7 +249,7 @@ Telegram::Bot::Client.run(token) do |bot|
           when 'Weekly'
             fb.temp.tick(chat_id, 168)
           end
-          bot.api.send_message(chat_id: chat_id, text: 'Now, how many ' + message.text[0..-3].downcase + 's you want between my notifications?')
+          bot.api.send_message(chat_id: chat_id, text: 'Now, how many ' + message.text[0..-3].downcase + 's you want between my notifications?', reply_markup: remove_kb)
           fb.state.set(chat_id, 'notify_2')
         end
 
@@ -208,9 +257,10 @@ Telegram::Bot::Client.run(token) do |bot|
         n = Integer(message.text) rescue nil
         if (n && n.between?(0, 30))
           bot.api.send_message(chat_id: chat_id, text: "Notification settings have been changed.")
+          hours = n * fb.temp.tick(chat_id)
           t = Time.now
-          t = Time.new(t.year, t.month, t.day, t.hour)
-          fb.set_notifications(chat_id, {start: t, tick: n * fb.temp.tick(chat_id)})
+          t = Time.new(t.year, t.month, t.day, t.hour) + (60*60*hours)
+          fb.notify.set(chat_id, {next: t, tick: n * hours})
           fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
         else
@@ -222,4 +272,7 @@ Telegram::Bot::Client.run(token) do |bot|
       end
     end
   end
+
+  
+
 end

@@ -18,17 +18,25 @@ class Word
 		return @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words/" + w_id + "/word").body if w_id
 
 		words = @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words").body.to_a
-		w = words[rand(words.length)]
-		return { id: w[0], word: w[1]['word'] }
+		if (!words.empty?)
+			w = words[rand(words.length)]
+			return { id: w[0], word: w[1]['word'] }
+		else
+			return nil
+		end
 	end
 
 	def translation(chat_id, v_id, w_id = nil)
 		return @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words/" + w_id + "/translation").body.to_a if w_id
 
 		words = @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words").body.to_a
-		w = words[rand(words.length)]
-		translations = w[1]['translation'].to_a
-		t = translations[rand(translations.length)]
-		return { id: w[0], translation: t }
+		if (!words.empty?)
+			w = words[rand(words.length)]
+			translations = w[1]['translation'].to_a
+			t = translations[rand(translations.length)]
+			return { id: w[0], translation: t }
+		else
+			return nil
+		end
 	end
 end
