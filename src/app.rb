@@ -177,27 +177,36 @@ Telegram::Bot::Client.run(token) do |bot|
         end
         
       when 'new_2'
-        if (Language.check(message.text))
-          llang = fb.temp.llang(chat_id)
-          klang = message.text
-          if (fb.vocs.id(chat_id, {llang: llang, klang: klang}) == nil)
-            response = fb.vocs.create(chat_id, {llang: llang, klang: klang})
-            fb.vocs.activate(chat_id, response.body["name"])
-            fb.temp.clear(chat_id)
-            bot.api.send_message(chat_id: chat_id, text: "You've created " + llang + "-" + klang + " vocabulary. Add some words - it's empty now!", reply_markup: remove_kb)
-          else
-            bot.api.send_message(chat_id: chat_id, text: "You already have similar vocabulary. Why you would want another one?")
-          end
+        llang = fb.temp.llang(chat_id)
+        klang = message.text
+        if (Language.check(klang))
+          bot.api.send_message(chat_id: chat_id, text: 'Please, use buttons or type correct language.', reply_markup: languageMenu)
+        elsif (llang == klang)
+          bot.api.send_message(chat_id: chat_id, text: 'Languages are identical: you have nothing to learn.', reply_markup: remove_kb)
+          fb.temp.clear(chat_id)
+          fb.state.set(chat_id, 'idle')
+        elsif (fb.vocs.id(chat_id, {llang: llang, klang: klang}) != nil)
+          bot.api.send_message(chat_id: chat_id, text: "You already have similar vocabulary. Why you would want another one?")
+          fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
         else
-          bot.api.send_message(chat_id: chat_id, text: 'Please, use buttons or type correct language.', reply_markup: languageMenu)
+          response = fb.vocs.create(chat_id, {llang: llang, klang: klang})
+          fb.vocs.activate(chat_id, response.body["name"])
+          bot.api.send_message(chat_id: chat_id, text: "You've created " + llang + "-" + klang + " vocabulary. Add some words - it's empty now!", reply_markup: remove_kb)
+          fb.temp.clear(chat_id)
+          fb.state.set(chat_id, 'idle')
         end
 
       when 'switch_1'
         langs = message.text.split('-')
-        fb.vocs.activate(chat_id, fb.vocs.id(chat_id, {llang: langs[0], klang: langs[1]}))
-        bot.api.send_message(chat_id: chat_id, text: 'Successfully switched vocabulary.', reply_markup: remove_kb)
-        fb.state.set(chat_id, 'idle')
+        voc_id = fb.vocs.id(chat_id, {llang: langs[0], klang: langs[1]})
+        if (voc_id)
+          fb.vocs.activate(chat_id, voc_id)
+          bot.api.send_message(chat_id: chat_id, text: 'Successfully switched vocabulary.', reply_markup: remove_kb)
+          fb.state.set(chat_id, 'idle')
+        else
+          bot.api.send_message(chat_id: chat_id, text: "You don't have a vocabulary lke that.\nPlease use buttons, not keyboard.")
+        end
 
       when 'add_1'
         fb.temp.word(chat_id, message.text.downcase)
@@ -221,10 +230,12 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: chat_id, text: word + ' has been added.', reply_markup: remove_kb)
           fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
+        else
+          bot.api.send_message(chat_id: chat_id, text: 'Something went wrong. Try again.')
         end
 
       when 'word_1'
-        answer = message.text
+        answer = message.text.downcase
         if (fb.vocs.words.translation(chat_id, current[:id], fb.temp.cw_id(chat_id)).index(answer) != nil)
           bot.api.send_message(chat_id: chat_id, text: 'Correct. You\'re a star!')
         else
@@ -234,7 +245,7 @@ Telegram::Bot::Client.run(token) do |bot|
         fb.state.set(chat_id, 'idle')
 
       when 'translation_1'
-        answer = message.text
+        answer = message.text.downcase
         if (fb.vocs.words.get(chat_id, current[:id], fb.temp.cw_id(chat_id)) == answer)
           bot.api.send_message(chat_id: chat_id, text: 'Correct. You\'re a star!')
         else
@@ -244,22 +255,25 @@ Telegram::Bot::Client.run(token) do |bot|
         fb.state.set(chat_id, 'idle')
 
       when 'notify_1'
-        case message.text
-        when 'Never'
+        case message.text.downcase
+        when 'never'
           bot.api.send_message(chat_id: chat_id, text: 'Okay, no notification then.', reply_markup: remove_kb)
           fb.notify.stop(chat_id)
           fb.state.set(chat_id, 'idle')
-        else
-          case message.text
-          when 'Hourly'
-            fb.temp.tick(chat_id, 1)
-          when 'Daily'
-            fb.temp.tick(chat_id, 24)
-          when 'Weekly'
-            fb.temp.tick(chat_id, 168)
-          end
+        when 'hourly'
+          fb.temp.tick(chat_id, 1)
           bot.api.send_message(chat_id: chat_id, text: 'Now, how many ' + message.text[0..-3].downcase + 's you want between my notifications?', reply_markup: remove_kb)
           fb.state.set(chat_id, 'notify_2')
+        when 'daily'
+          fb.temp.tick(chat_id, 24)
+          bot.api.send_message(chat_id: chat_id, text: 'Now, how many ' + message.text[0..-3].downcase + 's you want between my notifications?', reply_markup: remove_kb)
+          fb.state.set(chat_id, 'notify_2')
+        when 'weekly'
+          fb.temp.tick(chat_id, 168)
+          bot.api.send_message(chat_id: chat_id, text: 'Now, how many ' + message.text[0..-3].downcase + 's you want between my notifications?', reply_markup: remove_kb)
+          fb.state.set(chat_id, 'notify_2')
+        else
+          bot.api.send_message(chat_id: chat_id, text: 'Something went wrong. Try again.')
         end
 
       when 'notify_2'
