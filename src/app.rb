@@ -47,6 +47,12 @@ def help_text(state)
     "We are playing words. I give you a translation, you give me a word. Roger?\n
     If you want to cancel it, just type \/cancel"
 
+  when 'notify_1'
+    "You're trying to change notification settings. Follow the instructions.\n
+    If you want to cancel it, just type \/cancel"
+  else
+    "Actually, I have no idea what you're doing myself."
+
   end
 end
 
