@@ -198,7 +198,7 @@ Telegram::Bot::Client.run(token) do |bot|
       when 'new_2'
         llang = fb.temp.llang(chat_id)
         klang = message.text
-        if (Language.check(klang))
+        if (!Language.check(klang))
           bot.api.send_message(chat_id: chat_id, text: 'Please, use buttons or type correct language.', reply_markup: languageMenu)
         elsif (llang == klang)
           bot.api.send_message(chat_id: chat_id, text: 'Languages are identical: you have nothing to learn.', reply_markup: remove_kb)
