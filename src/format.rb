@@ -20,7 +20,7 @@ class Format
 	end
 
 	def self.spanish(word)
-		word.match(/((un(os|a(s)?)? )|(el )|(la(s)? )|(los ))w*/)[1]
+		word.gsub(/((un(os|a(s)?)? )|(el )|(la(s)? )|(los ))/, "")
 	end
 
 	def self.english(word)
