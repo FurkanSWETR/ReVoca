@@ -6,7 +6,7 @@ class Word
 	end
 
 	def add(chat_id, v_id, data)
-		@firebase.push("users/" + chat_id + "/vocs/" + v_id + "/words", data)
+		@firebase.set("users/" + chat_id + "/vocs/" + v_id + "/words/" + data[:word], data)
 	end
 
 	def all(chat_id, v_id)
