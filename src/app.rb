@@ -2,6 +2,7 @@ require 'telegram/bot'
 require 'aws-sdk'
 require_relative 'fb'
 require_relative 'options'
+require_relative 'format'
 
 token = ENV.fetch('BOT_TOKEN')
 base_uri = ENV.fetch('FIREBASE_URL')
@@ -263,7 +264,7 @@ Telegram::Bot::Client.run(token) do |bot|
         when 'NO'
           word = fb.temp.word(chat_id)
           translation = fb.temp.translation(chat_id)
-          fb.vocs.words.add(chat_id, current[:id], { word: word, translation: translation, created_at: Time.now})
+          fb.vocs.words.add(chat_id, current[:id], { word: Format.word(current[:llang], word), translation: translation, created_at: Time.now})
           bot.api.send_message(chat_id: chat_id, text: word + ' has been added.', reply_markup: remove_kb)
           fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
