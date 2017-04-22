@@ -24,7 +24,7 @@ class Format
 	end
 
 	def self.english(word)
-		word
+		word.gsub(/((a(n)? )|(the )|(to ))/, "")
 	end
 
 	def self.russian(word)

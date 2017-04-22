@@ -8,7 +8,7 @@ token = ENV.fetch('BOT_TOKEN')
 base_uri = ENV.fetch('FIREBASE_URL')
 
 remove_kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
-languageMenu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [[Language.eng[0], Language.rus[1]], [Language.spa[2], Language.fra[3]]], one_time_keyboard: true)
+languageMenu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [[Language.eng, Language.rus], [Language.spa, Language.fra]], one_time_keyboard: true)
 yes_no_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(YES NO)], one_time_keyboard: true)
 tick_menu = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(Hourly Daily), %w(Weekly Never)], one_time_keyboard: true)
 
@@ -16,12 +16,14 @@ def help_text(state)
   case state
   when 'idle'
     "My name is Revoca. I can help you learn new languages.\n
-    First you need to create a vocabulary using \/new comand. New vocabulary will automatically become active, but if you want to switch back, use \/switch.\n
-    Empty vocabularies are boring: to add a new word type \/add.\n
-    To train your vocabulary type \/word to get a random word in learning language or \/translation to get a translation. Then you'll be asked to translate it.\n
-    To list the words from your vocabulary type \/list.\n
-    To delete a vocabulary use \/delete.\n
-    To change notification settings type \/notify and follow instructions.\n
+    First you need to create a vocabulary using \/new_vocabulary comand. New vocabulary will automatically become active, but if you want to switch back, use \/switch_vocabulary.\n
+    Empty vocabularies are boring: to add a new word type \/add_word.\n
+    If you don't know a translation, best to type \/translate_word and then save it to your vocabulary.
+    To train your vocabulary type \/random_word to get a random word in learning language or \/random_translation to get a translation. Then you'll be asked to translate it.\n
+    To list the words from your vocabulary type \/list_words.\n
+    To delete a vocabulary use \/delete_vocabulary.\n
+    To change notification settings type \/change_notification_settings and follow instructions.\n
+    Also you can change my main language, just type \/change_language
     Hope you'll enjoy working with me. But let's keep it professional."
 
   when 'new_1', 'new_2'
@@ -51,6 +53,15 @@ def help_text(state)
   when 'notify_1'
     "You're trying to change notification settings. Follow the instructions.\n
     If you want to cancel it, just type \/cancel"
+
+  when 'language_1'
+    "You're trying to change my main language. There are 4 languages currently available.
+1 - English
+2 - Russian
+3 - Spanish
+4 - French
+If you don't want to change the language, type \/cancel"
+
   else
     "Actually, I have no idea what you're doing myself."
 
@@ -119,14 +130,14 @@ Telegram::Bot::Client.run(token) do |bot|
     when '/cancel'
       fb.state.set(chat_id, 'idle')
 
-    when '/new'
+    when '/new_vocabulary'
       bot.api.send_message(chat_id: chat_id, text: 'Select a language you want to learn:', reply_markup: languageMenu)
       fb.state.set(chat_id, 'new_1')
 
-    when '/switch'
+    when '/switch_vocabulary'
       vocs = fb.vocs.all(chat_id)
       if (vocs && vocs.length > 1)
-        vocs.map! { |v| Telegram::Bot::Types::KeyboardButton.new(text: v[:llang] + '-' + v[:klang]) }
+        vocs.map! { |v| Telegram::Bot::Types::KeyboardButton.new(text: Language.name(v[:llang]) + '-' + Language.name(v[:klang])) }
         markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: vocs)
         bot.api.send_message(chat_id: chat_id, text: 'Select a vocabulary:', reply_markup: markup)
         fb.state.set(chat_id, 'switch_1')
@@ -136,10 +147,10 @@ Telegram::Bot::Client.run(token) do |bot|
         bot.api.send_message(chat_id: chat_id, text: 'Actually, you have no vocabularies yet. Better create one now.')
       end
 
-    when '/delete'
+    when '/delete_vocabulary'
       vocs = fb.vocs.all(chat_id)
       if (vocs && vocs.length > 1)
-        vocs.map! { |v| Telegram::Bot::Types::KeyboardButton.new(text: v[:llang] + '-' + v[:klang]) }
+        vocs.map! { |v| Telegram::Bot::Types::KeyboardButton.new(text: Language.name(v[:llang]) + '-' + Language.name(v[:klang])) }
         markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: vocs)
         bot.api.send_message(chat_id: chat_id, text: 'Select a vocabulary:', reply_markup: markup)
         fb.state.set(chat_id, 'delete_1')
@@ -149,40 +160,40 @@ Telegram::Bot::Client.run(token) do |bot|
         bot.api.send_message(chat_id: chat_id, text: 'Actually, you have no vocabularies yet. Better create one now.')
       end
 
-    when '/add'
+    when '/add_word'
       bot.api.send_message(chat_id: chat_id, text: 'Enter new word: ')
       fb.state.set(chat_id, 'add_1')
 
-    when '/word'
+    when '/random_word'
       w = fb.vocs.words.get(chat_id, current[:id])
       if(w)
         fb.temp.cw_id(chat_id, w[:id])
-        bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ current[:klang] + ': ' + w[:word])
+        bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ Language.name(current[:klang]) + ': ' + w[:word])
         fb.state.set(chat_id, 'word_1')
       else
         bot.api.send_message(chat_id: chat_id, text: "I don't think you have any words. Please add some.")
       end
 
-    when '/translation'
+    when '/random_translation'
       w = fb.vocs.words.translation(chat_id, current[:id])
       if(w)
         fb.temp.cw_id(chat_id, w[:id])
-        bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ current[:llang] + ': ' + w[:translation])
+        bot.api.send_message(chat_id: chat_id, text: 'Translate to '+ Language.name(current[:llang]) + ': ' + w[:translation])
         fb.state.set(chat_id, 'translation_1')
       else
         bot.api.send_message(chat_id: chat_id, text: "I don't think you have any words. Please add some.")
       end
 
-    when '/translate'
+    when '/translate_word'
       bot.api.send_message(chat_id: chat_id, text: "Sorry, it's not implemented yet.")
 
-    when '/list'
+    when '/list_words'
       words = fb.vocs.words.all(chat_id, current[:id])
-      text = words.length.to_s + " words in your " + current[:llang] + "-" + current[:klang] + " dictionary:\n"
+      text = words.length.to_s + " words in your " + Language.name(current[:llang]) + "-" + Language.name(current[:klang]) + " dictionary:\n"
       text += words.map{ |w| "* " + w[:word] + " - " + w[:translation].join(', ')}.join("\n")
       bot.api.send_message(chat_id: chat_id, text: text)
 
-    when '/notify'
+    when '/change_notification_settings'
       if(current)
         bot.api.send_message(chat_id: chat_id, text: 'First, how often you want my notifications: ', reply_markup: tick_menu)
         fb.state.set(chat_id, 'notify_1')
@@ -194,8 +205,9 @@ Telegram::Bot::Client.run(token) do |bot|
       state = fb.state.now(chat_id)
       case state
       when 'new_1'
-        if (Language.check(message.text))
-          fb.temp.llang(chat_id, message.text)
+        lang_id = Language.check(message.text)
+        if (lang_id)
+          fb.temp.llang(chat_id, lang_id)
           bot.api.send_message(chat_id: chat_id, text: 'Select a language you know:', reply_markup: languageMenu)
           fb.state.set(chat_id, 'new_2')
         else
@@ -204,8 +216,8 @@ Telegram::Bot::Client.run(token) do |bot|
         
       when 'new_2'
         llang = fb.temp.llang(chat_id)
-        klang = message.text
-        if (!Language.check(klang))
+        klang = Language.check(message.text)
+        if (!klang)
           bot.api.send_message(chat_id: chat_id, text: 'Please, use buttons or type correct language.', reply_markup: languageMenu)
         elsif (llang == klang)
           bot.api.send_message(chat_id: chat_id, text: 'Languages are identical: you have nothing to learn.', reply_markup: remove_kb)
@@ -216,7 +228,7 @@ Telegram::Bot::Client.run(token) do |bot|
           fb.temp.clear(chat_id)
           fb.state.set(chat_id, 'idle')
         else
-          response = fb.vocs.create(chat_id, {llang: llang, klang: klang})
+          response = fb.vocs.create(chat_id, {llang: Language.name(llang), klang: Language.name(klang)})
           fb.vocs.activate(chat_id, response.body["name"])
           bot.api.send_message(chat_id: chat_id, text: "You've created " + llang + "-" + klang + " vocabulary. Add some words - it's empty now!", reply_markup: remove_kb)
           fb.temp.clear(chat_id)
@@ -225,7 +237,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
       when 'switch_1'
         langs = message.text.split('-')
-        voc_id = fb.vocs.id(chat_id, {llang: langs[0], klang: langs[1]})
+        voc_id = fb.vocs.id(chat_id, {llang: Language.check(langs[0]), klang: Language.check(langs[1])})
         if (voc_id)
           fb.vocs.activate(chat_id, voc_id)
           bot.api.send_message(chat_id: chat_id, text: 'Successfully switched vocabulary.', reply_markup: remove_kb)
@@ -236,7 +248,7 @@ Telegram::Bot::Client.run(token) do |bot|
 
       when 'delete_1'
         langs = message.text.split('-')
-        voc_id = fb.vocs.id(chat_id, {llang: langs[0], klang: langs[1]})
+        voc_id = fb.vocs.id(chat_id, {llang: Language.check(langs[0]), klang: Language.check(langs[1])})
         if (voc_id)
           fb.vocs.delete(chat_id, voc_id)
           fb.vocs.activate(chat_id, fb.vocs.all(chat_id)[0][:id])
