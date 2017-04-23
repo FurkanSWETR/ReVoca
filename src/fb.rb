@@ -44,4 +44,12 @@ class FB
 		@@total_users
 	end
 
+	def locale(chat_id, new_locale = nil)
+		if (new_locale)
+			@firebase.set("users/" + chat_id + "/locale", new_locale)
+		else
+			l = @firebase.get("users/" + chat_id + "/locale").body
+			l ? l.to_sym : :en
+		end
+	end
 end

@@ -18,7 +18,7 @@ class Language
 	end
 
 	def self.eng
-		@@languages["ENG"][@@i] ? @@languages["ENG"][@@i] : @@languages["ENG"]
+		@@languages["ENG"][@@i]
 	end
 
 	def self.rus
