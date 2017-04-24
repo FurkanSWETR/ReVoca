@@ -1,9 +1,12 @@
 require 'telegram/bot'
 require 'aws-sdk'
 require 'i18n'
+
 require_relative 'fb'
 require_relative 'options'
 require_relative 'format'
+require_relative 'translate'
+
 
 I18n.load_path = Dir['src/config/en.yml', 'src/config/ru.yml']
 I18n.config.available_locales = [:en, :ru]
@@ -160,7 +163,8 @@ Telegram::Bot::Client.run(token) do |bot|
       end
 
     when '/translate_word'
-      bot.api.send_message(chat_id: chat_id, text: I18n.t('not_implemented', :locale => locale))
+      bot.api.send_message(chat_id: chat_id, text: I18n.t('translate.question', :locale => locale))
+      fb.state.set(chat_id, 'translate_1')
 
     when '/list_words'
       words = fb.vocs.words.all(chat_id, current[:id])
@@ -238,7 +242,8 @@ Telegram::Bot::Client.run(token) do |bot|
 
       when 'add_1'
         fb.temp.word(chat_id, Format.word(current[:llang], message.text.downcase))
-        bot.api.send_message(chat_id: chat_id, text: I18n.t('add.translation', :locale => locale))
+        te = Translator.translate(message.text.downcase, current[:klang], current[:llang])
+        bot.api.send_message(chat_id: chat_id, text: I18n.t('add.translation', :locale => locale, possible_translation: te["translationText"]))
         fb.state.set(chat_id, 'add_2')
 
       when 'add_2'
@@ -318,20 +323,25 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: chat_id, text: I18n.t('notification.error', :locale => locale))
         end
 
+      when 'translate_1'
+        te = Translator.translate(message.text, current[:klang], current[:llang])
+        bot.api.send_message(chat_id: chat_id, text: te["translationText"])
+        fb.state.set(chat_id, 'idle')
+
       when 'language_1'
         lang_id = Language.check(message.text)
         if (lang_id)
           case lang_id
-          when 'ENG' 
+          when 'en' 
             Language.i = 0
             locale = :en
-          when 'RUS' 
+          when 'ru' 
             Language.i = 1
             locale = :ru
-          when 'SPA' 
+          when 'es' 
             Language.i = 2
             locale = :en
-          when 'FRA' 
+          when 'fr' 
             Language.i = 3
             locale = :en
           else 

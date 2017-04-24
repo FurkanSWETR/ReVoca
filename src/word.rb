@@ -1,5 +1,3 @@
-require 'translit'
-
 class Word
 	@firebase
 
@@ -8,7 +6,7 @@ class Word
 	end
 
 	def add(chat_id, v_id, data)
-		@firebase.set("users/" + chat_id + "/vocs/" + v_id + "/words/" + Translit.convert(data[:word], :english), data)
+		@firebase.set("users/" + chat_id + "/vocs/" + v_id + "/words/" + CGI.escape(data[:word]), data)
 	end
 
 	def all(chat_id, v_id)

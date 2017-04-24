@@ -6,13 +6,13 @@ class Format
 
 	def self.word(lang, word)
 		case lang
-		when 'ENG'
+		when 'en'
 			english(word)
-		when 'RUS'
+		when 'ru'
 			russian(word)
-		when 'spanish'
+		when 'es'
 			spanish(word)
-		when 'FRA'
+		when 'fr'
 			french(word)
 		else
 			word

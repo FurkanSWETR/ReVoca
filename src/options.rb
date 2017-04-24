@@ -1,9 +1,9 @@
 class Language
 	@@languages = {
-		"ENG" => ['English', 'Английский', 'Inglés', 'Anglais'],
-		"RUS" => ['Russian', 'Русский', 'Ruso', 'Russe'],
-		"SPA" => ['Spanish', 'Испанский', 'Español', 'Espagnol'],
-		"FRA" => ['French', 'Французский', 'Francés', 'Français']
+		"en" => ['English', 'Английский', 'Inglés', 'Anglais'],
+		"ru" => ['Russian', 'Русский', 'Ruso', 'Russe'],
+		"es" => ['Spanish', 'Испанский', 'Español', 'Espagnol'],
+		"fr" => ['French', 'Французский', 'Francés', 'Français']
 	}
 
 	@@i = 0
@@ -18,30 +18,30 @@ class Language
 	end
 
 	def self.eng
-		@@languages["ENG"][@@i]
+		@@languages["en"][@@i]
 	end
 
 	def self.rus
-		@@languages["RUS"][@@i]
+		@@languages["ru"][@@i]
 	end
 
 	def self.spa
-		@@languages["SPA"][@@i]
+		@@languages["es"][@@i]
 	end
 
 	def self.fra
-		@@languages["FRA"][@@i]
+		@@languages["fr"][@@i]
 	end
 
 	def self.name(id)
 		case id
-		when "ENG"
+		when "en"
 			return eng
-		when "RUS"
+		when "ru"
 			return rus
-		when "SPA"
+		when "es"
 			return spa
-		when "FRA"
+		when "fr"
 			return fra
 		else
 			return "Unknown"

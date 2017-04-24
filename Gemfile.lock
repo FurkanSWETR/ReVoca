@@ -33,7 +33,6 @@ GEM
       faraday
       virtus
     thread_safe (0.3.6)
-    translit (0.1.5)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
@@ -47,8 +46,8 @@ DEPENDENCIES
   aws-sdk
   firebase
   i18n
+  json
   telegram-bot-ruby
-  translit
 
 RUBY VERSION
    ruby 2.4.0p0

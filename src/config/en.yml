@@ -51,7 +51,7 @@ en:
     success: 'Successfully deleted vocabulary.'
   add:
     word: 'Enter new word: '
-    translation: 'Good. Now enter translation: '
+    translation: "Good. Now enter translation. \nPossible translation: %{possible_translation}"
     more:
       question: 'Very well, do you want to add more translations?'
       positive: 'OK, here you go.'
@@ -63,6 +63,8 @@ en:
     bad: "You're wrong. Keep training."
   not_implemented: "Sorry, it's not implemented yet."
   list: "%{num} words in your %{llang}-%{klang} vocabulary:\n%{words}"
+  translate:
+    question: "Enter the word to translate:"
   notification:
     intro: 'First select how often you want my notifications:'
     no_vocabulary: "You can't do this. You don't even have an active vocabulary!"
