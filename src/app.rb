@@ -9,8 +9,8 @@ require_relative 'translate'
 require_relative 'menu'
 require_relative 'command'
 
-I18n.load_path = Dir['src/config/en.yml', 'src/config/ru.yml']
-I18n.config.available_locales = [:en, :ru]
+I18n.load_path = Dir['src/config/en.yml', 'src/config/ru.yml', 'src/config/es.yml', 'src/config/fr.yml']
+I18n.config.available_locales = [:en, :ru, :es, :fr]
 I18n.backend.load_translations
 
 token = ENV.fetch('BOT_TOKEN')
