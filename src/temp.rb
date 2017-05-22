@@ -42,14 +42,6 @@ class Temp
 		end
 	end
 
-	def tick(chat_id, data = nil)
-		if(data)
-			@firebase.set("users/" + chat_id + "/temp/tick", data)
-		else
-			@firebase.get("users/" + chat_id + "/temp/tick").body
-		end
-	end
-
 	def cw_id(chat_id, data = nil)
 		if(data)
 			@firebase.set("users/" + chat_id + "/temp/cw_id", data)

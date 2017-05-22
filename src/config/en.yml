@@ -1,79 +1,126 @@
 en:
+  answer:
+    negative: "👎 No"
+    positive: "👍 Yes"
+    wrong: "Sorry, you should select yes or no."
+  games:
+    help: "🕹️ Games\n\nIn order to learn new words, it's best to play games. There are two types of games I can offer: translate words or guess which translation is correct.\nIf you don't want to play, type /cancel or press 'Back'."
+    info: "🕹️ Games\n\nPlease, select your game:"
+    repeat:
+      info: "🔁 Translate words\n\nRules are simple: I give you a word, you give a translation. If it's correct, we continue playing. If not - you lose.\nYou can stop playing by typing /cancel. Or an incorrect answer 😀"
+      question: "🔁 Translate words\n\nTranslate to %{lang}: %{word}"
+      result:
+        error: "You're wrong. Game over."
+        success: "Correct!"
   hello: "Hello. My name is Revoca. I can help you learn new languages. But I'm not a chat-bot!\nType /help for commands info."
-  fail: 'Something went wrong. Try again.'
-  help:
-    idle: "My name is Revoca. I can help you learn new languages.\n
-    If you don't have a vocabulary you need to create one using /new_vocabulary comand. New vocabulary will automatically become active, but if you want to switch back, use /switch_vocabulary.\n
-    Empty vocabularies are boring: to add a new word type /add_word.\n
-    If you don't know a translation, it's best to type /translate_word and then save it to your vocabulary.
-    To train your vocabulary type /random_word to get a random word in learning language or /random_translation to get a translation. Then you'll be asked to translate it.\n
-    To list the words from your vocabulary type /list_words.\n
-    To delete a vocabulary use /delete_vocabulary.\n
-    To change notification settings type /change_notification_settings and follow instructions.\n
-    Also you can change my main language, just type /change_language.
-    Hope you'll enjoy working with me. But let's keep it professional."
-    new: "You're creating a vocabulary. Select language you want to learn, then select language you know. That's it.\n
-    If you want to cancel creation, just type /cancel"
-    add: "You're adding a word to vocabulary. First type word in the language you're learning, then its translations.\n
-    If you want to cancel operation, just type /cancel"
-    switch: "You're switching your active vocabulary. Choose the one you want to become active from menu.\n
-    If you want to cancel operation, just type /cancel"
-    delete:  "You're deleting a vocabulary. Choose the one you want to delete from menu.\n
-    If you want to cancel operation, just type /cancel"
-    random:
-      word: "You are playing words. I give you a word, you give me a translation. Roger?\n
-    If you want to stop, just type /cancel" 
-      translation: "You are playing words. I give you a translation, you give me a word. Roger?\n
-    If you want to stop, just type /cancel"
-    notifications: "You're changing notification settings. Follow the instructions.\n
-    If you want to cancel operation, just type /cancel"
-    language_change: "You're trying to change my main language. There are 4 languages currently available: English, Russian, Spanish and French.\n
-    If you don't want to change the language, type /cancel"
-    unknown: "Actually, I have no idea what you're doing myself."
-  new_vocabulary: 
-    learn: 'Select a language you want to learn:'
-    know: 'Select a language you know:'
-    wrong: 'Please, use buttons or type correct language.'
-    identical: 'Languages are identical: you have nothing to learn.'
-    already_have: "You already have similar vocabulary. Why you would want another one?"
-    created: "You've created %{llang}-%{klang} vocabulary. Add some words - it's empty now!"
-  switch_vocabulary: 
-    intro: 'Select a vocabulary:'
-    one: 'Sorry, you have just one vocabulary. If you want to switch, create a new one.'
-    none: 'Actually, you have no vocabularies yet. Better create one now.'
-    error: "You don't have a vocabulary like that.\nPlease use buttons, not keyboard."
-    success: 'Successfully switched vocabulary.'
-  delete_vocabulary: 
-    intro: 'Select a vocabulary:'
-    one: "Sorry, you have just one vocabulary. You can't delete your last vocabulary."
-    none: 'Actually, you have no vocabularies yet. Better create one now.'
-    error: "You don't have a vocabulary like that.\nPlease use buttons, not keyboard."
-    success: 'Successfully deleted vocabulary.'
-  add:
-    word: 'Enter new word: '
-    translation: "Good. Now enter translation. \nPossible translation: %{possible_translation}"
-    more:
-      question: 'Very well, do you want to add more translations?'
-      positive: 'OK, here you go.'
-      negative: '%{word} has been added.'
-  random:
-    none: "I don't think you have any words. Please add some."
-    translate: "Translate to "
-    good: "Correct. You're a star!"
-    bad: "You're wrong. Keep training."
-  not_implemented: "Sorry, it's not implemented yet."
-  list: "%{num} words in your %{llang}-%{klang} vocabulary:\n%{words}"
+  languages:
+    flags:
+      en: "🇬🇧"
+      es: "🇪🇸"
+      fr: "🇫🇷"
+      ru: "🇷🇺"
+    names:
+      en: "English"
+      es: "Spanish"
+      fr: "French"
+      ru: "Russian"
+  main:
+    help: "My name is Revoca. I can help you learn new languages.\nIf you don't have a vocabulary you need to create one using /new_vocabulary comand. New vocabulary will automatically become active, but if you want to switch back, use /switch_vocabulary.\nEmpty vocabularies are boring: to add a new word type /add_word.\nIf you don't know a translation, it's best to type /translate_word and then save it to your vocabulary.\nTo train your vocabulary type /game and choose a game you want to play.\nTo list the words from your vocabulary type /list_words.\nTo delete a vocabulary use /delete_vocabulary.\nTo change notification settings type /change_notification_settings and follow instructions.\nAlso you can change my main language, just type /change_language.\nHope you'll enjoy working with me. But let's keep it professional."
+    info: "Back to menu..."
+  menu:
+    back: "⬅️ Back"
+    games:
+      guess: "🔀 Select right translation"
+      repeat: "🔁 Translate words"
+    help: "❓ Help"
+    main:
+      games: "🕹️ Games"
+      settings: "🔧 Settings"
+      translate: "💻 Translator"
+      vocabulary: "📖 Vocabularies"
+      word: "📋 Words"
+    notify:
+      day: "1 Day"
+      day_two: "2 Days"
+      hour_one: "1 Hour"
+      hour_two: "2 Hours"
+      hour_four: "4 Hours"
+      hour_six: "6 Hours"
+      hour_twelve: "12 Hours"
+      never: "Never"
+      week: "1 Week"
+    settings:
+      info: "ℹ️ Info"
+      language: "📜 Language"
+      notifications: "⏰ Period"
+      sleep: "🛏️ Sleep Hours"
+    vocabularies:
+      add: "📕 Add vocabulary"
+      list: "📃 List vocabularies"
+      switch: "📚 Switch vocabulary"
+      delete: "🗑️ Delete vocabulary"
+    words:
+      add: "✏️ Add word"
+      list: "📝 List words"
+  settings:
+    help: "🔧 Settings\n\nHere you can view and change your current notification settings. Select 'Period' if you want to change how often you want your notifications. Select 'Sleep Hours' if you want to change time, when I shouldn't bother you.\nIf you don't want to change settings, type /cancel or press 'Back'."
+    info: "🔧 Settings\n\nChoose what you want to change:"
+    language:
+      choice: "📜 Language\n\nSelect language you want:"
+      help: "📜 Language\n\nHere you can change my primary language. Now I speak to you in English, but you can switch to other languages as well.\nIf you don't want to do anything with vocabularies, type /cancel or press 'Back'."
+      result:
+        error: "Something went wrong. Language settings will remain the same."
+        success: "Language has been changed."
+    notify:
+      help: "⏰ Period\n\nHere you can select how often you want my notifications. 1 day is the smallest, 1 week is the largest period.\nBut, if you have sleep hours at notification time, then your notification will be delievered after sleep hours.\nIf you don't want to change notification time, type /cancel or press 'Back'."
+      info: "⏰ Period\n\nHow often do you want my notifications?"
+      no_vocabulary: "Sorry, you still don't have a vocabulary. Create one and then you can use notifications."
+      none: "⏰ Period\n\nYou successfully disabled notifications."
+      result:
+        error: "Something went wrong. Notification settings will remain the same."
+        success: "Notification settings have been changed."
   translate:
-    question: "Enter the word to translate:"
-  notification:
-    intro: 'First select how often you want my notifications:'
-    no_vocabulary: "You can't do this. You don't even have an active vocabulary!"
-    none: 'Okay, no notification then.'
-    selected_period: 'Now, how many %{period}s you want between my notifications?'
-    success: "Notification settings have been changed."
-    error: "Something is wrong. I don't understand. Probably it'st not an integer, less than 1 or bigger than 30. Try again."
-  change_language: 
-    question: 'Select a language:'
-    success: 'Language changed'
-    error: 'Please, use buttons or type correct language.'
-  not_a_comand: "It's not a command. I don't understand you. I can help you with learning new words, but I'm not a chat-bot, you moron!"
+    translation: "Translation: %{translation}.\nIf you want to save it to vocabulary, type /save."
+    word: "Enter the word to translate:"
+  vocabularies:
+    delete:
+      help: "🗑️ Delete vocabulary\n\nHere you can switch to another vocabulary (if you have more than one).\nIf you don't want to create a vocabulary, type /cancel or press 'Back'."
+      list: "🗑️ Delete vocabulary\n\nSelect vocabulary to switch to:"
+      none: "🗑️ Delete vocabulary\n\nYou don't have any vocabularies. Can't switch to one."
+      one: "🗑️ Delete vocabulary\n\nYou have only one vocabulary."
+      result:
+        error: "Something went wrong. Vocabulary was not deleted."
+        success: "Vocabulary was successfully deleted."
+    help: "📖 Vocabulary\n\nHere you can manage your vocabularies. You are free to create, switch to and delete vocabularies.\nIf you don't want to do anything with vocabularies, type /cancel or press 'Back'."
+    info: "📖 Vocabulary\n\nChoose what you want to do:"
+    new:
+      exist: "📕 Add vocabulary\n\nYou already have such a vocabulary. Why you want another one?"
+      help: "📕 Add vocabulary\n\nHere you can create new vocabulary. First you select language you want to learn, then the language you already know.\nIf you don't want to create a vocabulary, type /cancel or press 'Back'."
+      identical: "📕 Add vocabulary\n\nYou've selected identical languages. Don't think you'll learn something."
+      know: "📕 Add vocabulary\n\nSelect language you already know:"
+      learn: "📕 Add vocabulary\n\nSelect language you want to learn:"
+      result:
+        error: "Something went wrong. Vocabulary was not created."
+        success: "Vocabulary was successfully created."
+      wrong: "📕 Add vocabulary\n\nPlease, type or select correct language." 
+    switch:
+      help: "📚 Switch vocabulary\n\nHere you can delete vocabularies (if you have more than one).\nIf you don't want to create a vocabulary, type /cancel or press 'Back'."
+      list: "📚 Switch vocabulary\n\nSelect vocabulary to delete:"
+      none: "📚 Switch vocabulary\n\nYou don't have vocabularies. Can't delete one."
+      one: "📚 Switch vocabulary\n\nYou have only one vocabulary. Can't delete last vocabulary."
+      result:
+        error: "Something went wrong. Vocabulary was not switched."
+        success: "Vocabulary was successfully switched."
+  words:
+    help: "📋 Words\n\nHere you can manage words in your vocabulary. You are free to add and review words.\nIf you don't want to manage your words, type /cancel or press 'Back'."
+    info: "📋 Words\n\nChoose what you want to do:"
+    list: "%{num} words in your %{llang}-%{klang} vocabulary:\n%{words}"
+    new:
+      more: "Do you want to add more translations?"
+      result:
+        error: "Something went wrong. Word was not added."
+        success: "%{word} has been added to vocabulary."
+      translation: "✏️ Add word\n\nType a translation:"
+      word: "✏️ Add word\n\nType a word:"
+  todo: "Sorry, it's not implemented yet."
+  unknown: "It's not a command. I don't understand you. I can help you with learning new words, but I'm not a chat-bot!"

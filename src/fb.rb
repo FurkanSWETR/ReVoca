@@ -20,8 +20,6 @@ class FB
 		@state = State.new(@firebase)
 		@temp = Temp.new(@firebase)
 		@notify = Notify.new(@firebase)
-
-		@@total_users += 1
 	end
 
 	def vocs
@@ -38,10 +36,6 @@ class FB
 
 	def notify
 		@notify
-	end
-
-	def total_users
-		@@total_users
 	end
 
 	def locale(chat_id, new_locale = nil)

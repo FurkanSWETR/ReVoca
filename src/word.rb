@@ -15,7 +15,7 @@ class Word
 	end
 
 	def get(chat_id, v_id, w_id = nil)
-		return @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words/" + w_id + "/word").body if w_id
+		return @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words/" +  CGI.escape(w_id) + "/word").body if w_id
 
 		words = @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words").body.to_a
 		if (!words.empty?)
@@ -27,7 +27,7 @@ class Word
 	end
 
 	def translation(chat_id, v_id, w_id = nil)
-		return @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words/" + w_id + "/translation").body.to_a if w_id
+		return @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words/" +  CGI.escape(w_id) + "/translation").body.to_a if w_id
 
 		words = @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words").body.to_a
 		if (!words.empty?)

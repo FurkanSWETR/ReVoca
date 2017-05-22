@@ -17,8 +17,10 @@ class Notify
 		@firebase.delete("notifications/users/" + chat_id)
 	end
 
-	def set(chat_id, data)
-		@firebase.set("notifications/users/" + chat_id, data)
+	def set(chat_id, tick)
+		t = Time.now
+		t = Time.new(t.year, t.month, t.day, t.hour) + (60*60*tick)
+		@firebase.set("notifications/users/" + chat_id, {next: t, tick: tick})
 	end
 
 	def all()
