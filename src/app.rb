@@ -289,14 +289,20 @@ Telegram::Bot::Client.run(token) do |bot|
       when 'settings'
         case(message.text)
         when I18n.t('menu.settings.info', :locale => locale)     
+          text = I18n.t('settings.summary.intro', :locale => locale)
+
           n = fb.notify.get(chat_id)
-          lang = I18n.t('languages.flags.' + locale.to_s, :locale => locale) + I18n.t('languages.names.' + locale.to_s, :locale => locale)
           if(n)
             period = Format.tick_every(n['tick'].to_i, locale)
+            text += I18n.t('settings.summary.notify.positive', :locale => locale, period: period)
           else
-            period = I18n.t('settings.notify.disabled', :locale => locale)
+            text += I18n.t('settings.summary.notify.negative', :locale => locale)
           end
-          bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.summary', :locale => locale, period: period, lang: lang), reply_markup: Menu.settings_menu(locale))
+
+          lang = I18n.t('languages.flags.' + locale.to_s, :locale => locale) + I18n.t('languages.names.' + locale.to_s, :locale => locale)
+          text += I18n.t('settings.summary.language', :locale => locale, lang: lang)
+
+          bot.api.send_message(chat_id: chat_id, text: text, reply_markup: Menu.settings_menu(locale))
         when I18n.t('menu.settings.language', :locale => locale)
           Command.change_language(bot, fb, chat_id, locale)
         when I18n.t('menu.settings.notifications', :locale => locale)
