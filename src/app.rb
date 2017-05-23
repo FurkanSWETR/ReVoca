@@ -91,7 +91,8 @@ Telegram::Bot::Client.run(token) do |bot|
       fb.state.set(chat_id, 'idle')
 
     when '/help'
-      bot.api.send_message(chat_id: chat_id, text: help_text(fb.state.now(chat_id), locale))
+      help = help_text(fb.state.now(chat_id), locale)
+      bot.api.send_message(chat_id: chat_id, text:  help[:text], reply_markup: help[:reply_markup])
 
     when '/cancel'
       bot.api.send_message(chat_id: chat_id, text: I18n.t('main.info', :locale => locale), reply_markup: Menu.main_menu(locale))
