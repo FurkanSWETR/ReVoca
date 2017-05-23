@@ -57,4 +57,24 @@ class Temp
 			@firebase.get("users/" + chat_id + "/temp/game/score").body.to_i
 		end
 	end
+
+	def sleep_exist(chat_id)
+		@firebase.get("users/" + chat_id + "/temp/sleep").body
+	end
+
+	def sleep_start(chat_id, data = nil)
+		if(data)
+			@firebase.set("users/" + chat_id + "/temp/sleep/start", data)
+		else
+			@firebase.get("users/" + chat_id + "/temp/sleep/start").body.to_i
+		end
+	end
+
+	def sleep_end(chat_id, data = nil)
+		if(data)
+			@firebase.set("users/" + chat_id + "/temp/sleep/end", data)
+		else
+			@firebase.get("users/" + chat_id + "/temp/sleep/end").body.to_i
+		end
+	end
 end

@@ -25,7 +25,15 @@ class Notify
 	def set(chat_id, tick)
 		t = Time.now
 		t = Time.new(t.year, t.month, t.day, t.hour) + (60*60*tick)
-		@firebase.set("notifications/users/" + chat_id, {next: t, tick: tick})
+		@firebase.set("notifications/users/" + chat_id, {next: t, tick: tick, sleep: sleep_hours(chat_id)})
+	end
+
+	def sleep_hours(chat_id, data = nil)
+		if(data)
+			@firebase.set("notifications/users/" + chat_id + "/sleep", data)
+		else
+			@firebase.get("notifications/users/" + chat_id + "/sleep").body
+		end
 	end
 
 	def all()

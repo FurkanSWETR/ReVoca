@@ -30,6 +30,10 @@ def help_text(state, locale)
     { text: I18n.t('settings.help', :locale => locale), reply_markup: Menu.settings_menu(locale) }
   when 'repeat'
     { text: I18n.t('games.repeat.help', :locale => locale), reply_markup: Menu.games_repeat_menu(locale) }
+  when 'sleep_daytime'
+    { text: I18n.t('settings.sleep.help', :locale => locale), reply_markup: Menu.daytime_menu(locale) }
+  when 'sleep_hours'
+    { text: I18n.t('settings.sleep.help', :locale => locale) }
   when 'translate'
     { text: "To Do", reply_markup: Menu.remove() }
   when 'vocabularies', 'voc_switch', 'voc_delete'
@@ -55,20 +59,34 @@ Telegram::Bot::Client.run(token) do |bot|
       notified.each do |n| 
         chat_id = n[:id]
         locale = tfb.locale(chat_id)
-
         if(Time.parse(n[:next]) < Time.now) 
+          sleep_hours = tfb.notify.sleep_hours(chat_id)
+          if(sleep_hours)
+            hour = Time.now.hour
+            if ((sleep_hours['start'] <= sleep_hours['end']) && (hour >= sleep_hours['start']) && (hour <= sleep_hours['end']))
+              tfb.notify.set(chat_id, sleep_hours['end']-hour)
+              next
+            end
+            if (sleep_hours['start'] >= sleep_hours['end'])
+              if (hour <= sleep_hours['end'])
+                tfb.notify.set(chat_id, sleep_hours['end']-hour)
+                next
+              elsif (hour >= sleep_hours['start'])
+                tfb.notify.set(chat_id, (24+sleep_hours['end'])-hour)
+                next
+              end
+            end
+          end
+
           tfb.notify.set(chat_id, n[:tick].to_i)
           current = tfb.vocs.get(chat_id, fb.vocs.active(chat_id))
           w = tfb.vocs.words.get(chat_id, current[:id])
-
           if (w)
-            word = w['word']
-            translations = w['translation'].to_a
-            
+            word = w[1]['word']
+            translations = w[1]['translation'].to_a
             text = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale) + ": " + word + "\n"
             text += I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale) + ": "
             text += translations.map.with_index {|x, i| (i+1).to_s + ") " + x }.join("; ")
-
             bot.api.send_message(chat_id: n[:id], text: text)
           end
         end
@@ -307,9 +325,9 @@ Telegram::Bot::Client.run(token) do |bot|
           Command.change_language(bot, fb, chat_id, locale)
         when I18n.t('menu.settings.notifications', :locale => locale)
           Command.change_notification_period(bot, fb, current, chat_id, locale)
-        when I18n.t('menu.settings.sleep', :locale => locale) # todo
-          bot.api.send_message(chat_id: chat_id, text: I18n.t('todo', :locale => locale), reply_markup: Menu.main_menu(locale))
-          fb.state.set(chat_id, 'idle')
+        when I18n.t('menu.settings.sleep', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.sleep.start.daytime', :locale => locale), reply_markup: Menu.daytime_menu(locale))
+          fb.state.set(chat_id, 'sleep_daytime')
         when I18n.t('menu.help', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.help', :locale => locale), reply_markup: Menu.settings_menu(locale))
         when I18n.t('menu.back', :locale => locale) 
@@ -317,6 +335,55 @@ Telegram::Bot::Client.run(token) do |bot|
           fb.state.set(chat_id, 'idle')
         else
           bot.api.send_message(chat_id: chat_id, text: I18n.t('unknown', :locale => locale), reply_markup: Menu.settings_menu(locale))
+        end
+
+      when 'sleep_daytime'
+        text = fb.temp.sleep_exist(chat_id) ? I18n.t('settings.sleep.end.hour', :locale => locale) : I18n.t('settings.sleep.start.hour', :locale => locale)
+        case(message.text)
+        when I18n.t('menu.help', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.sleep.help', :locale => locale), reply_markup: Menu.daytime_menu(locale))
+        when I18n.t('menu.back', :locale => locale) 
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.info', :locale => locale), reply_markup: Menu.settings_menu(locale))
+          fb.state.set(chat_id, 'settings')
+        when I18n.t('menu.daytime.night', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: text, reply_markup: Menu.time_1_menu(locale))
+          fb.state.set(chat_id, 'sleep_hours')
+        when I18n.t('menu.daytime.morning', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: text, reply_markup: Menu.time_2_menu(locale))
+          fb.state.set(chat_id, 'sleep_hours')
+        when I18n.t('menu.daytime.day', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: text, reply_markup: Menu.time_1_menu(locale, 12))
+          fb.state.set(chat_id, 'sleep_hours')
+        when I18n.t('menu.daytime.evening', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: text, reply_markup: Menu.time_2_menu(locale, 12))
+          fb.state.set(chat_id, 'sleep_hours')
+        else
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('unknown', :locale => locale), reply_markup: Menu.daytime_menu(locale))
+        end
+
+      when 'sleep_hours'
+        case(message.text)
+        when I18n.t('menu.help', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.sleep.help', :locale => locale))
+        when I18n.t('menu.back', :locale => locale) 
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.info', :locale => locale), reply_markup: Menu.settings_menu(locale))
+          fb.state.set(chat_id, 'settings')
+        else
+          i = /.((\d|\d{2}):00)/ =~ message.text
+          if (i)
+            if(fb.temp.sleep_exist(chat_id))
+              fb.notify.sleep_hours(chat_id, {start: fb.temp.sleep_start(chat_id), end: message.text[/(\d{2}|\d)/].to_i})
+              bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.sleep.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
+              fb.state.set(chat_id, 'settings')
+              fb.temp.clear(chat_id)
+            else
+              bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.sleep.end.daytime', :locale => locale), reply_markup: Menu.daytime_menu(locale))
+              fb.temp.sleep_start(chat_id, message.text[/(\d{2}|\d)/])
+              fb.state.set(chat_id, 'sleep_daytime')
+            end
+          else
+            bot.api.send_message(chat_id: chat_id, text: I18n.t('unknown', :locale => locale))
+          end
         end
 
       when 'translate' # todo

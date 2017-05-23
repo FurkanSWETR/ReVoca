@@ -3,6 +3,21 @@ require 'i18n'
 
 class Menu
 
+	def self.daytime_menu(locale)
+		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
+			[
+				I18n.t('menu.daytime.morning', :locale => locale),
+				I18n.t('menu.daytime.day', :locale => locale), 
+				I18n.t('menu.help', :locale => locale)
+				],
+				[
+					I18n.t('menu.daytime.evening', :locale => locale),
+					I18n.t('menu.daytime.night', :locale => locale),  
+					I18n.t('menu.back', :locale => locale)
+				]
+				], one_time_keyboard: true)
+	end
+
 	def self.games_menu(locale) 
 		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
 			[
@@ -88,6 +103,40 @@ class Menu
 				[
 					I18n.t('menu.settings.language', :locale => locale),
 					I18n.t('menu.help', :locale => locale),
+					I18n.t('menu.back', :locale => locale)
+				]
+				], one_time_keyboard: true)
+	end
+
+	def self.time_1_menu(locale, start = 0) 
+		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
+			[
+				I18n.t('menu.hour.twelve', :locale => locale) + start.to_s + ":00", 
+				I18n.t('menu.hour.one', :locale => locale) + (1+start).to_s + ":00",
+				I18n.t('menu.hour.two', :locale => locale) + (2+start).to_s + ":00",
+				I18n.t('menu.help', :locale => locale)
+				],
+				[
+					I18n.t('menu.hour.three', :locale => locale) + (3+start).to_s + ":00",
+					I18n.t('menu.hour.four', :locale => locale) + (4+start).to_s + ":00",
+					I18n.t('menu.hour.five', :locale => locale) + (5+start).to_s + ":00",
+					I18n.t('menu.back', :locale => locale)
+				]
+				], one_time_keyboard: true)
+	end
+
+	def self.time_2_menu(locale, start = 0) 
+		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
+			[
+				I18n.t('menu.hour.six', :locale => locale) + (6+start).to_s + ":00", 
+				I18n.t('menu.hour.seven', :locale => locale) + (7+start).to_s + ":00",
+				I18n.t('menu.hour.eight', :locale => locale) + (8+start).to_s + ":00",
+				I18n.t('menu.help', :locale => locale)
+				],
+				[
+					I18n.t('menu.hour.nine', :locale => locale) + (9+start).to_s + ":00",
+					I18n.t('menu.hour.ten', :locale => locale) + (10+start).to_s + ":00",
+					I18n.t('menu.hour.eleven', :locale => locale) + (11+start).to_s + ":00",
 					I18n.t('menu.back', :locale => locale)
 				]
 				], one_time_keyboard: true)

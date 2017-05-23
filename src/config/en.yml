@@ -33,10 +33,28 @@ en:
     info: "Back to menu..."
   menu:
     back: "⬅️ Back"
+    daytime:
+      day: "☀️ Day"
+      evening: "🌆 Evening"
+      morning: "🌅 Morning"
+      night: "🌙 Night"
     games:
       guess: "🔀 Select right translation"
       repeat: "🔁 Translate words"
     help: "❓ Help"
+    hour:
+      one: "🕐"
+      two: "🕑"
+      three: "🕒"
+      four: "🕓"
+      five: "🕔"
+      six: "🕕"
+      seven: "🕖"
+      eight: "🕗"
+      nine: "🕘"
+      ten: "🕙"
+      eleven: "🕚"
+      twelve: "🕛"
     main:
       games: "🕹️ Games"
       settings: "🔧 Settings"
@@ -83,6 +101,19 @@ en:
       result:
         error: "Something went wrong. Notification settings will remain the same."
         success: "Notification settings have been changed."
+    sleep:
+      end: 
+        daytime: "🛏️ Sleep Hours\n\nSelect when your sleep hours end:"
+        hour: "🛏️ Sleep Hours\n\nSelect exact hour when your sleep hours end:"
+        wrong: "Wrong input. Try again."
+      help: "🛏️ Sleep Hours\n\nHere you can change my sleep hours. First select part of day when your sleep hours start, then exact time. Next you should the same with its end.\nIf you don't want to change sleep hours, type /cancel or press 'Back'."
+      result:
+        error: "Something went wrong. Sleep hours settings will remain the same."
+        success: "Sleep hours settings have been changed."
+      start: 
+        daytime: "🛏️ Sleep Hours\n\nSelect when your sleep hours begin:"
+        hour: "🛏️ Sleep Hours\n\nSelect exact hour when your sleep hours begin:"
+        wrong: "Wrong input. Try again."
     summary: 
       intro: "🔧 Settings\n\n"
       language: "Your primary language is %{lang}."

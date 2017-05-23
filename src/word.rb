@@ -16,7 +16,6 @@ class Word
 
 	def get(chat_id, v_id, w_id = nil)
 		return @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words/" +  CGI.escape(w_id)).body if w_id
-
 		words = @firebase.get("users/" + chat_id + "/vocs/" + v_id + "/words").body.to_a
 		return !words.empty? ? words[rand(words.length)] : nil
 	end
