@@ -76,6 +76,7 @@ en:
         error: "Something went wrong. Language settings will remain the same."
         success: "Language has been changed."
     notify:
+      disabled: "disabled"
       help: "⏰ Period\n\nHere you can select how often you want my notifications. 1 day is the smallest, 1 week is the largest period.\nBut, if you have sleep hours at notification time, then your notification will be delievered after sleep hours.\nIf you don't want to change notification time, type /cancel or press 'Back'."
       info: "⏰ Period\n\nHow often do you want my notifications?"
       no_vocabulary: "Sorry, you still don't have a vocabulary. Create one and then you can use notifications."
@@ -83,6 +84,21 @@ en:
       result:
         error: "Something went wrong. Notification settings will remain the same."
         success: "Notification settings have been changed."
+    summary: "🔧 Settings\n\nYou have notifications %{period}.\n\nYour primary language is %{lang}"
+  time:
+    day: "day"
+    days: "days"
+    every:
+      day: "every %{period} day"
+      days: "every %{period} days"
+      hour: "every %{period} hour"
+      hours_1: "every %{period} hours"
+      hours_2: "every %{period} hours"
+      week: "every %{period} week"
+    hour: "hour"
+    hours_1: "hours"
+    hours_2: "hours"
+    week: "week"
   translate:
     translation: "Translation: %{translation}.\nIf you want to save it to vocabulary, type /save."
     word: "Enter the word to translate:"

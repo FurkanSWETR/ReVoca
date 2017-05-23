@@ -288,9 +288,15 @@ Telegram::Bot::Client.run(token) do |bot|
 
       when 'settings'
         case(message.text)
-        when I18n.t('menu.settings.info', :locale => locale) # todo     
-          bot.api.send_message(chat_id: chat_id, text: I18n.t('todo', :locale => locale), reply_markup: Menu.main_menu(locale))
-          fb.state.set(chat_id, 'idle')
+        when I18n.t('menu.settings.info', :locale => locale)     
+          n = fb.notify.get(chat_id)
+          lang = I18n.t('languages.flags.' + locale.to_s, :locale => locale) + I18n.t('languages.names.' + locale.to_s, :locale => locale)
+          if(n)
+            period = Format.tick_every(n['tick'].to_i, locale)
+          else
+            period = I18n.t('settings.notify.disabled', :locale => locale)
+          end
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.summary', :locale => locale, period: period, lang: lang), reply_markup: Menu.settings_menu(locale))
         when I18n.t('menu.settings.language', :locale => locale)
           Command.change_language(bot, fb, chat_id, locale)
         when I18n.t('menu.settings.notifications', :locale => locale)
