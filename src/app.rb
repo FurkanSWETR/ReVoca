@@ -52,22 +52,19 @@ Telegram::Bot::Client.run(token) do |bot|
       notified = tfb.notify.all
       notified.each do |n| 
         chat_id = n[:id]
-        tick = n[:tick].to_i
-        next_time = Time.parse(n[:next])
+        locale = tfb.locale(chat_id)
 
-        if(next_time < Time.now)          
-          next_time += (60*60)*tick until next_time > Time.now
-          tfb.notify.set(chat_id, {next: next_time, tick: tick})
-
+        if(Time.parse(n[:next]) < Time.now) 
+          tfb.notify.set(chat_id, n[:tick].to_i)
           current = tfb.vocs.get(chat_id, fb.vocs.active(chat_id))
-
           w = tfb.vocs.words.get(chat_id, current[:id])
+
           if (w)
             word = w[:word]
             translations = tfb.vocs.words.translation(chat_id, current[:id], w[:id])
-
-            text = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale).capitalize + ": " + word + "\n"
-            text += I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale).capitalize + ": "
+            
+            text = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale) + ": " + word + "\n"
+            text += I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale) + ": "
             text += translations.map.with_index {|x, i| (i+1).to_s + ") " + x }.join("; ")
 
             bot.api.send_message(chat_id: n[:id], text: text)
