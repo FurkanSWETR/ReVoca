@@ -42,11 +42,19 @@ class Temp
 		end
 	end
 
-	def cw_id(chat_id, data = nil)
+	def game_answer(chat_id, data = nil)
 		if(data)
-			@firebase.set("users/" + chat_id + "/temp/cw_id", data)
+			@firebase.set("users/" + chat_id + "/temp/game/answer", data)
 		else
-			@firebase.get("users/" + chat_id + "/temp/cw_id").body
+			@firebase.get("users/" + chat_id + "/temp/game/answer").body.to_a
+		end
+	end
+
+	def game_score(chat_id, data = nil)
+		if(data)
+			@firebase.set("users/" + chat_id + "/temp/game/score", data)
+		else
+			@firebase.get("users/" + chat_id + "/temp/game/score").body.to_i
 		end
 	end
 end

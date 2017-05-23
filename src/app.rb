@@ -28,6 +28,8 @@ def help_text(state, locale)
     { text: I18n.t('vocabularies.new.help', :locale => locale), reply_markup: Menu.language_menu(locale) }
   when 'notify', 'settings'
     { text: I18n.t('settings.help', :locale => locale), reply_markup: Menu.settings_menu(locale) }
+  when 'repeat'
+    { text: I18n.t('games.repeat.help', :locale => locale), reply_markup: Menu.games_repeat_menu(locale) }
   when 'translate'
     { text: "To Do", reply_markup: Menu.remove() }
   when 'vocabularies', 'voc_switch', 'voc_delete'
@@ -60,8 +62,8 @@ Telegram::Bot::Client.run(token) do |bot|
           w = tfb.vocs.words.get(chat_id, current[:id])
 
           if (w)
-            word = w[:word]
-            translations = tfb.vocs.words.translation(chat_id, current[:id], w[:id])
+            word = w['word']
+            translations = w['translation'].to_a
             
             text = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale) + ": " + word + "\n"
             text += I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale) + ": "
@@ -132,8 +134,8 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: chat_id, text: I18n.t('todo', :locale => locale), reply_markup: Menu.main_menu(locale))
           fb.state.set(chat_id, 'idle')
         when I18n.t('menu.games.repeat', :locale => locale)
-          bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.info', :locale => locale), reply_markup: Menu.remove())      
-          fb.state.set(chat_id, 'repeat_1')
+          fb.temp.game_score(chat_id, 0)
+          Command.repeat_game(bot, fb, current, chat_id, locale)
         when I18n.t('menu.help', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('games.help', :locale => locale), reply_markup: Menu.games_menu(locale))
         when I18n.t('menu.back', :locale => locale) 
@@ -261,6 +263,28 @@ Telegram::Bot::Client.run(token) do |bot|
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.error', :locale => locale), reply_markup: Menu.settings_menu(locale))
         end
         fb.state.set(chat_id, 'settings')
+
+      when 'repeat'
+        case(message.text)
+        when I18n.t('menu.help', :locale => locale)
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.help', :locale => locale), reply_markup: Menu.games_repeat_menu(locale))
+        when I18n.t('menu.back', :locale => locale) 
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('games.info', :locale => locale), reply_markup: Menu.games_menu(locale))
+          fb.state.set(chat_id, 'games')
+        else
+          answer = fb.temp.game_answer(chat_id)
+          score = fb.temp.game_score(chat_id)
+          if(answer.find { |a| a == message.text })
+            score += 1
+            bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.result.success', :locale => locale, score: score), reply_markup: Menu.remove())
+            fb.temp.game_score(chat_id, score)
+            Command.repeat_game(bot, fb, current, chat_id, locale)
+          else
+            bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.result.error', :locale => locale, score: score), reply_markup: Menu.games_menu(locale))
+            fb.temp.clear(chat_id)
+            fb.state.set(chat_id, 'games')
+          end
+        end
 
       when 'settings'
         case(message.text)
@@ -402,25 +426,6 @@ Telegram::Bot::Client.run(token) do |bot|
   end
 end
 
-   # when '/random_word'
-    #   w = fb.vocs.words.get(chat_id, current[:id])
-    #   if(w)
-    #     fb.temp.cw_id(chat_id, w[:id])
-    #     bot.api.send_message(chat_id: chat_id, text: I18n.t('game.random.translate', :locale => locale, lang: Language.name(current[:klang]), word: w[:word]))
-    #     fb.state.set(chat_id, 'word_1')
-    #   else
-    #     bot.api.send_message(chat_id: chat_id, text: I18n.t('game.random.none', :locale => locale))
-    #   end
-
-    # when '/random_translation'
-    #   w = fb.vocs.words.translation(chat_id, current[:id])
-    #   if(w)
-    #     fb.temp.cw_id(chat_id, w[:id])
-    #     bot.api.send_message(chat_id: chat_id, text: I18n.t('game.random.translate', :locale => locale, lang: Language.name(current[:llang]), word: w[:translation]))
-    #     fb.state.set(chat_id, 'translation_1')
-    #   else
-    #     bot.api.send_message(chat_id: chat_id, text: I18n.t('game.random.none', :locale => locale))
-    #   end
 
           # when 'word_1'
       #   answer = message.text.downcase
@@ -441,5 +446,3 @@ end
       #   end
       #   fb.temp.clear(chat_id)
       #   fb.state.set(chat_id, 'idle')
-
-    # finished section

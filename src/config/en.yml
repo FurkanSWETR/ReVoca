@@ -7,11 +7,12 @@ en:
     help: "🕹️ Games\n\nIn order to learn new words, it's best to play games. There are two types of games I can offer: translate words or guess which translation is correct.\nIf you don't want to play, type /cancel or press 'Back'."
     info: "🕹️ Games\n\nPlease, select your game:"
     repeat:
-      info: "🔁 Translate words\n\nRules are simple: I give you a word, you give a translation. If it's correct, we continue playing. If not - you lose.\nYou can stop playing by typing /cancel. Or an incorrect answer 😀"
+      help: "🔁 Translate words\n\nRules are simple: I give you a word, you give a translation. If it's correct, we continue playing. If not - you lose.\nYou can stop playing by typing /cancel. Or an incorrect answer 😀"
+      none: "🔁 Translate words\n\nYou have no words in your vocabulary so we can't play games."
       question: "🔁 Translate words\n\nTranslate to %{lang}: %{word}"
       result:
-        error: "You're wrong. Game over."
-        success: "Correct!"
+        error: "🔁 Translate words\n\nYou're wrong. Game over.\n\nYour score: %{score}."
+        success: "🔁 Translate words\n\nCorrect!\n\nYour score: %{score}."
   hello: "Hello. My name is Revoca. I can help you learn new languages. But I'm not a chat-bot!\nType /help for commands info."
   help:
     creator: "@lexvenim"

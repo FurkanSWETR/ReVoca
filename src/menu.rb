@@ -16,6 +16,15 @@ class Menu
 				], one_time_keyboard: true)
 	end
 
+	def self.games_repeat_menu(locale) 
+		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
+			[ 
+				I18n.t('menu.help', :locale => locale),
+				I18n.t('menu.back', :locale => locale)
+			]
+			], one_time_keyboard: true)
+	end
+
 	def self.language_menu(locale) 
 		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
 			[
