@@ -397,9 +397,13 @@ Telegram::Bot::Client.run(token) do |bot|
           Command.new_vocabulary(bot, fb, chat_id, locale)
         when I18n.t('menu.vocabularies.delete', :locale => locale)
           Command.delete_vocabulary(bot, fb, chat_id, locale)
-        when I18n.t('menu.vocabularies.list', :locale => locale) # todo
-          bot.api.send_message(chat_id: chat_id, text: I18n.t('todo', :locale => locale), reply_markup: Menu.main_menu(locale))
-          fb.state.set(chat_id, 'idle')
+        when I18n.t('menu.vocabularies.list', :locale => locale) 
+          vocs = fb.vocs.all(chat_id).map do |v|
+            v_name = I18n.t('languages.flags.' + v[:llang], :locale => locale) + I18n.t('languages.names.' + v[:llang], :locale => locale) + " - " + I18n.t('languages.flags.' + v[:klang], :locale => locale) + I18n.t('languages.names.' + v[:klang], :locale => locale)
+            v_count = fb.vocs.words.all(chat_id, v[:id]).length.to_s
+            I18n.t('vocabularies.list.voc', :locale => locale, name: v_name, count: v_count)
+          end
+          bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.list.main', :locale => locale, num: vocs.length.to_s, vocs: vocs.join("\n")), reply_markup: Menu.vocabularies_menu(locale))
         when I18n.t('menu.vocabularies.switch', :locale => locale)
           Command.switch_vocabulary(bot, fb, chat_id, locale)
         when I18n.t('menu.help', :locale => locale)

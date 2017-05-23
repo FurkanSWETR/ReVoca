@@ -148,6 +148,9 @@ en:
         success: "Vocabulary was successfully deleted."
     help: "📖 Vocabulary\n\nHere you can manage your vocabularies. You are free to create, switch to and delete vocabularies.\nIf you don't want to do anything with vocabularies, type /cancel or press 'Back'."
     info: "📖 Vocabulary\n\nChoose what you want to do:"
+    list: 
+      main: "You have %{num} vocabularies:\n%{vocs}"
+      voc: "%{name}: %{count} words"
     new:
       exist: "📕 Add vocabulary\n\nYou already have such a vocabulary. Why you want another one?"
       help: "📕 Add vocabulary\n\nHere you can create new vocabulary. First you select language you want to learn, then the language you already know.\nIf you don't want to create a vocabulary, type /cancel or press 'Back'."
