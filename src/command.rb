@@ -17,6 +17,25 @@ class Command
 		end
 	end
 
+	# to do
+	# def self.repeat_game(bot, fb, current, chat_id, locale)
+	# 	word = fb.vocs.words.get(chat_id, current[:id])[1]
+	# 	if(word)
+	# 		if([true, false].sample)
+	# 			fb.temp.game_answer(chat_id, word['translation'].to_a)
+	# 			lang = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale)
+	# 			bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word['word']), reply_markup: Menu.games_repeat_menu(locale))
+	# 		else
+	# 			fb.temp.game_answer(chat_id, [word['word']])
+	# 			lang = I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale)
+	# 			bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word['translation'].to_a.join(', ')), reply_markup: Menu.games_repeat_menu(locale))
+	# 		end
+	# 		fb.state.set(chat_id, 'repeat')
+	# 	else
+	# 		bot.api.send_message(chat_id: chat_id, text: I18n.t('game.repeat.none', :locale => locale), reply_markup: Menu.games_menu(locale))
+	# 	end
+	# end
+
 	def self.repeat_game(bot, fb, current, chat_id, locale)
 		word = fb.vocs.words.get(chat_id, current[:id])[1]
 		if(word)
@@ -48,9 +67,9 @@ class Command
 			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.delete.list', :locale => locale), reply_markup: Menu.vocabulary_list_menu(vocs, locale))
 			fb.state.set(chat_id, 'voc_delete')
 		elsif vocs.length == 1
-			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.delete.one', :locale => locale), reply_markup: Menu.vocabularies_menu(vocs, locale))
+			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.delete.one', :locale => locale), reply_markup: Menu.vocabularies_menu(locale))
 		else
-			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.delete.none', :locale => locale), reply_markup: Menu.vocabularies_menu(vocs, locale))
+			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.delete.none', :locale => locale), reply_markup: Menu.vocabularies_menu(locale))
 		end
 	end
 
@@ -65,9 +84,9 @@ class Command
 			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.switch.list', :locale => locale), reply_markup: Menu.vocabulary_list_menu(vocs, locale))
 			fb.state.set(chat_id, 'voc_switch')
 		elsif vocs.length == 1
-			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.switch.one', :locale => locale), reply_markup: Menu.vocabularies_menu(vocs, locale))
+			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.switch.one', :locale => locale), reply_markup: Menu.vocabularies_menu(locale))
 		else
-			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.switch.none', :locale => locale), reply_markup: Menu.vocabularies_menu(vocs, locale))
+			bot.api.send_message(chat_id: chat_id, text: I18n.t('vocabularies.switch.none', :locale => locale), reply_markup: Menu.vocabularies_menu(locale))
 		end
 	end
 
