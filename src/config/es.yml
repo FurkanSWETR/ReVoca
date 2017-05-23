@@ -13,6 +13,9 @@ es:
         error: "You're wrong. Game over."
         success: "Correct!"
   hello: "Hello. My name is Revoca. I can help you learn new languages. But I'm not a chat-bot!\nType /help for commands info."
+  help:
+    creator: "@lexvenim"
+    unknown: "Actually, I don't know, what you're doing."
   languages:
     flags:
       en: "🇬🇧"

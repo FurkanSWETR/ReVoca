@@ -18,24 +18,22 @@ base_uri = ENV.fetch('FIREBASE_URL')
 
 def help_text(state, locale)
   case state
+  when 'games'
+    { text: I18n.t('games.help', :locale => locale), reply_markup: Menu.games_menu(locale) }
   when 'idle'
-    I18n.t('help.idle', :locale => locale)
+    { text: I18n.t('main.help', :locale => locale), reply_markup: Menu.main_menu(locale) }
+  when 'language'
+    { text: I18n.t('settings.language.help', :locale => locale), reply_markup: Menu.language_menu(locale) } 
   when 'new_1', 'new_2'
-    I18n.t('help.new', :locale => locale)
-  when 'add_1', 'add_2', 'add_3'
-    I18n.t('help.add', :locale => locale)
-  when 'switch_1'
-    I18n.t('help.switch', :locale => locale)
-  when 'delete_1'
-    I18n.t('help.delete', :locale => locale)
-  when 'word_1'
-    I18n.t('help.game', :locale => locale)
-  when 'translation_1'
-    I18n.t('help.random.translation', :locale => locale)
-  when 'notify_1'
-    I18n.t('help.notifications', :locale => locale)
-  when 'language_1'
-    I18n.t('help.language_change', :locale => locale)
+    { text: I18n.t('vocabularies.new.help', :locale => locale), reply_markup: Menu.language_menu(locale) }
+  when 'notify', 'settings'
+    { text: I18n.t('settings.help', :locale => locale), reply_markup: Menu.settings_menu(locale) }
+  when 'translate'
+    { text: "To Do", reply_markup: Menu.remove() }
+  when 'vocabularies', 'voc_switch', 'voc_delete'
+    { text: I18n.t('vocabularies.help', :locale => locale), reply_markup: Menu.vocabularies_menu(locale) }
+  when 'add_1', 'add_2', 'add_3', 'words'
+    { text: I18n.t('words.help', :locale => locale), reply_markup: Menu.words_menu(locale) }
   else
     I18n.t('help.unknown', :locale => locale)
   end
