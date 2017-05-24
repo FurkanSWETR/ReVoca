@@ -22,7 +22,7 @@ class Notify
 		return n ? n.body : nil
 	end
 
-	def set_next(chat_id, tick)
+	def next_time(chat_id, tick)
 		t = Time.now
 		t = Time.new(t.year, t.month, t.day, t.hour) + (60*60*tick)
 		@firebase.set("notifications/users/" + chat_id + "/next", t)
@@ -30,7 +30,7 @@ class Notify
 
 	def set_tick(chat_id, tick)
 		@firebase.set("notifications/users/" + chat_id + "/tick", tick)
-		set_next(chat_id, tick)
+		next_time(chat_id, tick)
 	end
 
 	def sleep_hours(chat_id, data = nil)
@@ -43,6 +43,15 @@ class Notify
 
 	def all()
 		notified = @firebase.get("notifications/users").body.to_a
-		!notified.empty? ? notified.map { |n| { id: n[0], next: n[1]['next'], tick: n[1]['tick'] } } : nil
+		!notified.empty? ? notified.map { |n| { 
+			id: n[0],
+			next: Time.parse(n[1]['next']),
+			tick: n[1]['tick'].to_i,
+			sleep: n[1]['sleep'] ? {
+				start: n[1]['sleep']['start'].to_i,
+				end: n[1]['sleep']['end'].to_i
+			} : nil
+		}
+		} : nil
 	end
 end

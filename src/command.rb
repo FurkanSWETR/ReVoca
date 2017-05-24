@@ -39,16 +39,16 @@ class Command
 	end
 
 	def self.repeat_game(bot, fb, current, chat_id, locale)
-		word = fb.vocs.words.get(chat_id, current[:id])[1]
+		word = fb.vocs.words.random(chat_id, current[:id])
 		if(word)
 			if([true, false].sample)
-				fb.temp.game_answer(chat_id, word['translation'].to_a)
+				fb.temp.game_answer(chat_id, word[:translation])
 				lang = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale)
-				bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word['word']), reply_markup: Menu.games_repeat_menu(locale))
+				bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word[:word]), reply_markup: Menu.games_repeat_menu(locale))
 			else
-				fb.temp.game_answer(chat_id, [word['word']])
+				fb.temp.game_answer(chat_id, [word[:word]])
 				lang = I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale)
-				bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word['translation'].to_a.join(', ')), reply_markup: Menu.games_repeat_menu(locale))
+				bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word[:translation].join(', ')), reply_markup: Menu.games_repeat_menu(locale))
 			end
 			fb.state.set(chat_id, 'repeat')
 		else

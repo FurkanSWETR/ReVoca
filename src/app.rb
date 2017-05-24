@@ -2,6 +2,8 @@ require 'telegram/bot'
 require 'aws-sdk'
 require 'i18n'
 
+require_relative 'notifier'
+
 require_relative 'fb'
 require_relative 'format'
 require_relative 'language'
@@ -49,56 +51,10 @@ end
 
 Telegram::Bot::Client.run(token) do |bot|
 
+  n = Notifier.new
+  n.start(bot)
+
   fb = FB.new(base_uri)
-
-  thr = Thread.new {
-    tfb = FB.new(base_uri)
-    t = Time.now
-    tfb.notify.global(Time.new(t.year, t.month, t.day, t.hour))
-
-    loop do
-      notified = tfb.notify.all
-      notified.each do |n| 
-        chat_id = n[:id]
-        locale = tfb.locale(chat_id)
-        if(Time.parse(n[:next]) < Time.now) 
-          sleep_hours = tfb.notify.sleep_hours(chat_id)
-          if(sleep_hours)
-            hour = Time.now.hour
-            if ((sleep_hours['start'] <= sleep_hours['end']) && (hour >= sleep_hours['start']) && (hour <= sleep_hours['end']))
-              tfb.notify.set_next(chat_id, sleep_hours['end']-hour)
-              next
-            end
-            if (sleep_hours['start'] >= sleep_hours['end'])
-              if (hour <= sleep_hours['end'])
-                tfb.notify.set_next(chat_id, sleep_hours['end']-hour)
-                next
-              elsif (hour >= sleep_hours['start'])
-                tfb.notify.set_next(chat_id, (24+sleep_hours['end'])-hour)
-                next
-              end
-            end
-          end
-
-          tfb.notify.set_next(chat_id, n[:tick].to_i)
-          current = tfb.vocs.get(chat_id, fb.vocs.active(chat_id))
-          w = tfb.vocs.words.get(chat_id, current[:id])
-          if (w)
-            word = w[1]['word']
-            translations = w[1]['translation'].to_a
-            text = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale) + ": " + word + "\n"
-            text += I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale) + ": "
-            text += translations.map.with_index {|x, i| (i+1).to_s + ") " + x }.join("; ")
-            bot.api.send_message(chat_id: n[:id], text: text)
-          end
-        end
-      end
-
-      global_next = tfb.notify.global + 60*60
-      tfb.notify.global(global_next)
-      sleep(global_next - Time.now + 1)
-    end
-  }
 
   bot.listen do |message| 
     chat_id = message.chat.id.to_s
