@@ -6,6 +6,13 @@ en:
   games:
     help: "🕹️ Games\n\nIn order to learn new words, it's best to play games. There are two types of games I can offer: translate words or guess which translation is correct.\nIf you don't want to play, type /cancel or press 'Back'."
     info: "🕹️ Games\n\nPlease, select your game:"
+    select:
+      help: "🔀 Select right translation\n\nRules are simple: I give you a word and 4 translations, you select the one, which is correct. If it's correct, we continue playing. If not - you lose.\nYou can stop playing by typing /cancel. Or an incorrect answer 😀"
+      not_enough: "🔀 Select right translation\n\nYou have not enough words in your vocabulary so we can't play games."
+      question: "🔀 Select right translation\n\nTranslate to %{lang}: %{word}"
+      result:
+        error: "🔀 Select right translation\n\nYou're wrong. Game over.\n\nYour score: %{score}."
+        success: "🔀 Select right translations\n\nCorrect!\n\nYour score: %{score}."
     repeat:
       help: "🔁 Translate words\n\nRules are simple: I give you a word, you give a translation. If it's correct, we continue playing. If not - you lose.\nYou can stop playing by typing /cancel. Or an incorrect answer 😀"
       none: "🔁 Translate words\n\nYou have no words in your vocabulary so we can't play games."

@@ -17,24 +17,26 @@ class Command
 		end
 	end
 
-	# to do
-	# def self.repeat_game(bot, fb, current, chat_id, locale)
-	# 	word = fb.vocs.words.get(chat_id, current[:id])[1]
-	# 	if(word)
-	# 		if([true, false].sample)
-	# 			fb.temp.game_answer(chat_id, word['translation'].to_a)
-	# 			lang = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale)
-	# 			bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word['word']), reply_markup: Menu.games_repeat_menu(locale))
-	# 		else
-	# 			fb.temp.game_answer(chat_id, [word['word']])
-	# 			lang = I18n.t('languages.flags.' + current[:klang], :locale => locale) + I18n.t('languages.names.' + current[:klang], :locale => locale)
-	# 			bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.question', :locale => locale, lang: lang, word: word['translation'].to_a.join(', ')), reply_markup: Menu.games_repeat_menu(locale))
-	# 		end
-	# 		fb.state.set(chat_id, 'repeat')
-	# 	else
-	# 		bot.api.send_message(chat_id: chat_id, text: I18n.t('game.repeat.none', :locale => locale), reply_markup: Menu.games_menu(locale))
-	# 	end
-	# end
+	def self.select_game(bot, fb, current, chat_id, locale)
+		words = fb.vocs.words.all(chat_id, current[:id])
+		if(words.length > 3)
+			selected = (0...words.length).to_a.shuffle.take(4)
+			lang = I18n.t('languages.flags.' + current[:llang], :locale => locale) + I18n.t('languages.names.' + current[:llang], :locale => locale)
+			
+			i = selected.slice!(0)
+			word = words[i][:word]
+			answer = words[i][:translation].shuffle.first
+			answers = [answer]
+			fb.temp.game_answer(chat_id, [answer])
+
+			selected.each{|s| answers.push(words[s][:translation].shuffle.first)}
+
+			bot.api.send_message(chat_id: chat_id, text: I18n.t('games.select.question', :locale => locale, lang: lang, word: word), reply_markup: Menu.games_select_menu(locale, answers.shuffle))
+			fb.state.set(chat_id, 'select')
+		else
+			bot.api.send_message(chat_id: chat_id, text: I18n.t('game.select.not_enough', :locale => locale), reply_markup: Menu.games_menu(locale))
+		end
+	end
 
 	def self.repeat_game(bot, fb, current, chat_id, locale)
 		word = fb.vocs.words.get(chat_id, current[:id])[1]
