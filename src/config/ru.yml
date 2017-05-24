@@ -127,6 +127,7 @@ ru:
       notify:
         negative: "Оповещения отключены.\n\n" 
         positive: "Оповещения приходят %{period}.\n\n"
+      sleep: "Мои часы сна начинаются в %{hour_start}:00 и заканчиваются в %{hour_end}:00.\n\n"
   time:
     day: "день"
     days: "дня"

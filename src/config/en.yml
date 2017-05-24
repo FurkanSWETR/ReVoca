@@ -127,6 +127,7 @@ en:
       notify:
         negative: "Notifications are disabled.\n\n" 
         positive: "You have notifications %{period}.\n\n"
+      sleep: "Your sleep hours start at %{hour_start}:00 and end at %{hour_end}:00.\n\n"
   time:
     day: "day"
     days: "days"

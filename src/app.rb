@@ -341,6 +341,11 @@ Telegram::Bot::Client.run(token) do |bot|
             text += I18n.t('settings.summary.notify.negative', :locale => locale)
           end
 
+          sleep_hours = fb.notify.sleep_hours(chat_id)
+          if(sleep_hours)
+            text += I18n.t('settings.summary.sleep', :locale => locale, hour_start: sleep_hours['start'], hour_end: sleep_hours['end'])
+          end
+
           lang = I18n.t('languages.flags.' + locale.to_s, :locale => locale) + I18n.t('languages.names.' + locale.to_s, :locale => locale)
           text += I18n.t('settings.summary.language', :locale => locale, lang: lang)
 
