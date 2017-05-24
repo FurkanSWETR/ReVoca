@@ -66,21 +66,21 @@ Telegram::Bot::Client.run(token) do |bot|
           if(sleep_hours)
             hour = Time.now.hour
             if ((sleep_hours['start'] <= sleep_hours['end']) && (hour >= sleep_hours['start']) && (hour <= sleep_hours['end']))
-              tfb.notify.set(chat_id, sleep_hours['end']-hour)
+              tfb.notify.set_next(chat_id, sleep_hours['end']-hour)
               next
             end
             if (sleep_hours['start'] >= sleep_hours['end'])
               if (hour <= sleep_hours['end'])
-                tfb.notify.set(chat_id, sleep_hours['end']-hour)
+                tfb.notify.set_next(chat_id, sleep_hours['end']-hour)
                 next
               elsif (hour >= sleep_hours['start'])
-                tfb.notify.set(chat_id, (24+sleep_hours['end'])-hour)
+                tfb.notify.set_next(chat_id, (24+sleep_hours['end'])-hour)
                 next
               end
             end
           end
 
-          tfb.notify.set(chat_id, n[:tick].to_i)
+          tfb.notify.set_next(chat_id, n[:tick].to_i)
           current = tfb.vocs.get(chat_id, fb.vocs.active(chat_id))
           w = tfb.vocs.words.get(chat_id, current[:id])
           if (w)
@@ -255,28 +255,28 @@ Telegram::Bot::Client.run(token) do |bot|
           fb.notify.stop(chat_id)
         when I18n.t('menu.notify.day', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 24)
+          fb.notify.set_tick(chat_id, 24)
         when I18n.t('menu.notify.day_two', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 48)
+          fb.notify.set_tick(chat_id, 48)
         when I18n.t('menu.notify.hour_one', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 1)
+          fb.notify.set_tick(chat_id, 1)
         when I18n.t('menu.notify.hour_two', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 2)
+          fb.notify.set_tick(chat_id, 2)
         when I18n.t('menu.notify.hour_four', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 4)
+          fb.notify.set_tick(chat_id, 4)
         when I18n.t('menu.notify.hour_six', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 6)
+          fb.notify.set_tick(chat_id, 6)
         when I18n.t('menu.notify.hour_twelve', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 12)
+          fb.notify.set_tick(chat_id, 12)
         when I18n.t('menu.notify.week', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.notify.result.success', :locale => locale), reply_markup: Menu.settings_menu(locale))
-          fb.notify.set(chat_id, 168)
+          fb.notify.set_tick(chat_id, 168)
         when I18n.t('menu.back', :locale => locale)
           bot.api.send_message(chat_id: chat_id, text: I18n.t('settings.info', :locale => locale), reply_markup: Menu.settings_menu(locale))
         else
