@@ -77,4 +77,12 @@ class Temp
 			@firebase.get("users/" + chat_id + "/temp/sleep/end").body.to_i
 		end
 	end
+
+	def translated(chat_id, data = nil)
+		if(data)
+			@firebase.set("users/" + chat_id + "/temp/translated", data)
+		else
+			@firebase.get("users/" + chat_id + "/temp/translated").body
+		end
+	end
 end

@@ -144,6 +144,17 @@ Telegram::Bot::Client.run(token) do |bot|
     when '/change_language'
       Command.change_language(bot, fb, chat_id, locale)
 
+    when '/save'
+      word = fb.temp.translated(chat_id)
+      if (word)
+        fb.vocs.words.add(chat_id, current[:id], { word: word['word'], translation: word['translation'], created_at: Time.now})
+        bot.api.send_message(chat_id: chat_id, text: I18n.t('translate.save.result.success', :locale => locale, word: word['word']), reply_markup: Menu.main_menu(locale))
+        fb.temp.clear(chat_id)
+      else
+        bot.api.send_message(chat_id: chat_id, text: I18n.t('translate.save.none', :locale => locale), reply_markup: Menu.main_menu(locale))
+      end
+      fb.state.set(chat_id, 'idle')
+
     else
       state = fb.state.now(chat_id)
       case state     
@@ -415,9 +426,11 @@ Telegram::Bot::Client.run(token) do |bot|
           end
         end
 
-      when 'translate' # todo
+      when 'translate'
         te = Translator.translate(message.text, current[:klang], current[:llang])
-        bot.api.send_message(chat_id: chat_id, text: I18n.t('translate.translation', :locale => locale, translation: te["translationText"]), reply_markup: Menu.main_menu(locale))
+        translations = te["translationText"].split(" ").map { |t| t.downcase }
+        bot.api.send_message(chat_id: chat_id, text: I18n.t('translate.translation', :locale => locale, translation: translations.join(", ")), reply_markup: Menu.main_menu(locale))
+        fb.temp.translated(chat_id, {word: message.text, translation: translations})
         fb.state.set(chat_id, 'idle')
 
       when 'vocabularies'

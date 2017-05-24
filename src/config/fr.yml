@@ -143,6 +143,11 @@ fr:
     hours_2: "hours"
     week: "week"
   translate:
+    save:
+      none: "You have no words to save."
+      result:
+        error: "Something went wrong. Word was not added."
+        success: "%{word} has been added to vocabulary."
     translation: "Translation: %{translation}.\nIf you want to save it to vocabulary, type /save."
     word: "Enter the word to translate:"
   vocabularies:
