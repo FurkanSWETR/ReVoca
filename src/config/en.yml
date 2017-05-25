@@ -9,17 +9,17 @@ en:
     select:
       help: "🔀 Select right translation\n\nRules are simple: I give you a word and 4 translations, you select the one, which is correct. If it's correct, we continue playing. If not - you lose.\nYou can stop playing by typing /cancel. Or an incorrect answer 😀"
       not_enough: "🔀 Select right translation\n\nYou have not enough words in your vocabulary so we can't play games."
-      question: "🔀 Select right translation\n\nTranslate to %{lang}: %{word}"
+      question: "🔀 Select right translation\n\n%{stats}Translate to %{lang}: %{word}"
       result:
-        error: "🔀 Select right translation\n\nYou're wrong. Game over.\n\nYour score: %{score}."
-        success: "🔀 Select right translations\n\nCorrect!\n\nYour score: %{score}."
-    repeat:
+        error: "🔀 Select right translation\n\nYou're wrong. Game over.\n\nYour score: 💎%{score}."
+        success: "Correct!\nYour score: 💎%{score}.\n\n"
+    translate:
       help: "🔁 Translate words\n\nRules are simple: I give you a word, you give a translation. If it's correct, we continue playing. If not - you lose.\nYou can stop playing by typing /cancel. Or an incorrect answer 😀"
       none: "🔁 Translate words\n\nYou have no words in your vocabulary so we can't play games."
-      question: "🔁 Translate words\n\nTranslate to %{lang}: %{word}"
+      question: "🔁 Translate words\n\n%{stats}Translate to %{lang}: %{word}"
       result:
-        error: "🔁 Translate words\n\nYou're wrong. Game over.\n\nYour score: %{score}."
-        success: "🔁 Translate words\n\nCorrect!\n\nYour score: %{score}."
+        error: "🔁 Translate words\n\nYou're wrong. Game over.\n\nYour score: 💎%{score}."
+        success: "Correct!\nYour score: 💎%{score}.\n\n"
   hello: "Hello. My name is Revoca. I can help you learn new languages. But I'm not a chat-bot!\nType /help for commands info."
   help:
     creator: "@lexvenim"
@@ -46,8 +46,8 @@ en:
       morning: "🌅 Morning"
       night: "🌙 Night"
     games:
-      guess: "🔀 Select right translation"
-      repeat: "🔁 Translate words"
+      select: "🔀 Select right translation"
+      translate: "🔁 Translate words"
     help: "❓ Help"
     hour:
       one: "🕐"
@@ -81,7 +81,7 @@ en:
     settings:
       info: "ℹ️ Info"
       language: "📜 Language"
-      notifications: "⏰ Period"
+      notifications: "⏰ Notification Frequency"
       sleep: "🛏️ Sleep Hours"
     vocabularies:
       add: "📕 Add vocabulary"
@@ -101,10 +101,10 @@ en:
         error: "Something went wrong. Language settings will remain the same."
         success: "Language has been changed."
     notify:
-      help: "⏰ Period\n\nHere you can select how often you want my notifications. 1 day is the smallest, 1 week is the largest period.\nBut, if you have sleep hours at notification time, then your notification will be delievered after sleep hours.\nIf you don't want to change notification time, type /cancel or press 'Back'."
-      info: "⏰ Period\n\nHow often do you want my notifications?"
+      help: "⏰ Notification Frequency\n\nHere you can select how often you want my notifications. 1 day is the smallest, 1 week is the largest period.\nBut, if you have sleep hours at notification time, then your notification will be delievered after sleep hours.\nIf you don't want to change notification time, type /cancel or press 'Back'."
+      info: "⏰ Notification Frequency\n\nHow often do you want my notifications?"
       no_vocabulary: "Sorry, you still don't have a vocabulary. Create one and then you can use notifications."
-      none: "⏰ Period\n\nYou successfully disabled notifications."
+      none: "⏰ Notification Frequency\n\nYou successfully disabled notifications."
       result:
         error: "Something went wrong. Notification settings will remain the same."
         success: "Notification settings have been changed."
@@ -126,7 +126,7 @@ en:
       language: "Your primary language is %{lang}."
       notify:
         negative: "Notifications are disabled.\n\n" 
-        positive: "You have notifications %{period}.\n\n"
+        positive: "You have notifications %{tick}.\n\n"
       sleep: "Your sleep hours start at %{hour_start}:00 and end at %{hour_end}:00.\n\n"
   time:
     day: "day"
@@ -143,13 +143,14 @@ en:
     hours_2: "hours"
     week: "week"
   translate:
+    help: "💻 Translator\n\nIt will translate any word you enter. Probably. Give it a try anyway!"
     save:
       none: "You have no words to save."
       result:
         error: "Something went wrong. Word was not added."
         success: "%{word} has been added to vocabulary."
-    translation: "Translation: %{translation}.\nIf you want to save it to vocabulary, type /save."
-    word: "Enter the word to translate:"
+    translation: "💻 Translator\n\nTranslation: %{translation}.\nIf you want to save it to vocabulary, type /save."
+    word: "💻 Translator\n\nEnter the word to translate:"
   vocabularies:
     delete:
       help: "🗑️ Delete vocabulary\n\nHere you can delete vocabularies (if you have more than one).\nIf you don't want to delete a vocabulary, type /cancel or press 'Back'."
@@ -191,7 +192,7 @@ en:
       result:
         error: "Something went wrong. Word was not added."
         success: "%{word} has been added to vocabulary."
-      translation: "✏️ Add word\n\nType a translation:"
+      translation: "✏️ Add word\n\nPossible translation: %{possible_translation}.\n\nType a translation:"
       word: "✏️ Add word\n\nType a word:"
   todo: "Sorry, it's not implemented yet."
   unknown: "It's not a command. I don't understand you. I can help you with learning new words, but I'm not a chat-bot!"

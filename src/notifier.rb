@@ -1,3 +1,4 @@
+require 'aws-sdk'
 require 'i18n'
 
 require_relative 'fb'

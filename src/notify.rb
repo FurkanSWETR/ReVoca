@@ -37,7 +37,8 @@ class Notify
 		if(data)
 			@firebase.set("notifications/users/" + chat_id + "/sleep", data)
 		else
-			@firebase.get("notifications/users/" + chat_id + "/sleep").body
+			hours = @firebase.get("notifications/users/" + chat_id + "/sleep").body
+			return hours ? { start: hours['start'], end: hours['end'] } : nil
 		end
 	end
 

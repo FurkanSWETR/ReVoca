@@ -15,20 +15,20 @@ class Menu
 					I18n.t('menu.daytime.night', :locale => locale),  
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.games_menu(locale) 
 		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
 			[
-				I18n.t('menu.games.repeat', :locale => locale), 
+				I18n.t('menu.games.translate', :locale => locale), 
 				I18n.t('menu.help', :locale => locale)
 				],
 				[
-					I18n.t('menu.games.guess', :locale => locale), 
+					I18n.t('menu.games.select', :locale => locale), 
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.games_select_menu(locale, answers) 
@@ -43,16 +43,16 @@ class Menu
 					answers[3], 
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
-	def self.games_repeat_menu(locale) 
+	def self.games_translate_menu(locale) 
 		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [
 			[ 
 				I18n.t('menu.help', :locale => locale),
 				I18n.t('menu.back', :locale => locale)
 			]
-			], one_time_keyboard: true)
+			], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.language_menu(locale) 
@@ -67,7 +67,7 @@ class Menu
 					I18n.t('languages.flags.fr', :locale => locale) + I18n.t('languages.names.fr', :locale => locale), 
 					I18n.t('menu.back', :locale => locale), 
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.main_menu(locale) 
@@ -82,7 +82,7 @@ class Menu
 					I18n.t('menu.main.translate', :locale => locale),
 					I18n.t('menu.help', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.notify_menu(locale) 
@@ -101,7 +101,7 @@ class Menu
 					I18n.t('menu.notify.never', :locale => locale),
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.remove()
@@ -120,7 +120,7 @@ class Menu
 					I18n.t('menu.help', :locale => locale),
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.time_1_menu(locale, start = 0) 
@@ -137,7 +137,7 @@ class Menu
 					I18n.t('menu.hour.five', :locale => locale) + (5+start).to_s + ":00",
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.time_2_menu(locale, start = 0) 
@@ -154,7 +154,7 @@ class Menu
 					I18n.t('menu.hour.eleven', :locale => locale) + (11+start).to_s + ":00",
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.vocabularies_menu(locale) 
@@ -169,13 +169,13 @@ class Menu
 					I18n.t('menu.vocabularies.switch', :locale => locale), 
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.vocabulary_list_menu(vocs, locale) 
 		vocs.map! { |v| Telegram::Bot::Types::KeyboardButton.new(text: I18n.t('languages.flags.' + v[:llang], :locale => locale) + I18n.t('languages.names.' + v[:llang], :locale => locale) + '-' + I18n.t('languages.flags.' + v[:klang], :locale => locale) + I18n.t('languages.names.' + v[:klang], :locale => locale)) }		
 		vocs.push(Telegram::Bot::Types::KeyboardButton.new(text: I18n.t('menu.back', :locale => locale)))
-		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: vocs)
+		return Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: vocs, resize_keyboard: true)
 	end
 
 	def self.words_menu(locale) 
@@ -188,7 +188,7 @@ class Menu
 					I18n.t('menu.words.list', :locale => locale), 
 					I18n.t('menu.back', :locale => locale)
 				]
-				], one_time_keyboard: true)
+				], resize_keyboard: true, one_time_keyboard: true)
 	end
 
 	def self.yesno(locale)
@@ -197,6 +197,6 @@ class Menu
 				I18n.t('answer.positive', :locale => locale), 
 				I18n.t('answer.negative', :locale => locale)
 			]
-			], one_time_keyboard: true)
+			], resize_keyboard: true, one_time_keyboard: true)
 	end
 end

@@ -5,6 +5,6 @@ class Language
 		flags = I18n.t('languages', :locale => locale)[:flags]
 		names = I18n.t('languages', :locale => locale)[:names]
 		lang = names.find { |k, n| (flags[k] + n) == message}
-		return lang ? lang[0] : nil
+		return lang ? lang[0].to_s : nil
 	end
 end
