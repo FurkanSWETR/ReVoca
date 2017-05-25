@@ -261,7 +261,7 @@ Telegram::Bot::Client.run(token) do |bot|
         else
           answer = fb.temp.game_answer(chat_id)
           score = fb.temp.game_score(chat_id)
-          if(answer.find { |a| a == message.text })
+          if(answer.find { |a| a == message.text.downcase })
             score += 1
             bot.api.send_message(chat_id: chat_id, text: I18n.t('games.repeat.result.success', :locale => locale, score: score), reply_markup: Menu.remove())
             fb.temp.game_score(chat_id, score)
@@ -283,7 +283,7 @@ Telegram::Bot::Client.run(token) do |bot|
         else
           answer = fb.temp.game_answer(chat_id)
           score = fb.temp.game_score(chat_id)
-          if(answer.find { |a| a == message.text })
+          if(answer.find { |a| a == message.text.downcase })
             score += 1
             bot.api.send_message(chat_id: chat_id, text: I18n.t('games.select.result.success', :locale => locale, score: score), reply_markup: Menu.remove())
             fb.temp.game_score(chat_id, score)
