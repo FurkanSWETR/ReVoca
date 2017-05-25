@@ -18,10 +18,18 @@ class Respondent
 		@r = Response.new(@fb, message)
 	end
 
+	def form_error()
+		@r.error()
+	end
+
 	def form_response()
 		case @message
 		when '/cancel'
 			@r.cancel()
+		when '/creator'
+			@r.creator()
+		when '/error'
+			raise "It's an error"
 		when '/help'
 			@r.help()
 		when '/play_select'

@@ -30,6 +30,15 @@ class Response
 		return { text: I18n.t('main.info', :locale => @locale), markup: Menu.main_menu(@locale) }      
 	end
 
+	def creator()
+		return { text: I18n.t('creator', :locale => @locale), markup: nil }      
+	end
+
+	def error()
+		@fb.state.set(@chat_id, 'idle')
+		return { text: I18n.t('error', :locale => @locale), markup: Menu.main_menu(@locale) }      
+	end
+
 	def games()
 		case(@message.text)
 		when I18n.t('menu.games.select', :locale => @locale)

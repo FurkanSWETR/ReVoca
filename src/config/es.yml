@@ -3,6 +3,8 @@ es:
     negative: "👎 No"
     positive: "👍 Yes"
     wrong: "Sorry, you should select yes or no."
+  creator: "👨‍💻 Creator\n\n🇧🇾 @lexvenim"
+  error: "💀 Error\n\nSorry, something went wrong. Error log has been sent to my /creator, @lexvenim.\nYou should definetely blame him. I did nothing wrong."
   games:
     help: "🕹️ Games\n\nIn order to learn new words, it's best to play games. There are two types of games I can offer: translate words or guess which translation is correct.\nIf you don't want to play, type /cancel or press 'Back'."
     info: "🕹️ Games\n\nPlease, select your game:"
