@@ -28,8 +28,6 @@ class Respondent
 			@r.cancel()
 		when '/creator'
 			@r.creator()
-		when '/error'
-			raise "It's an error"
 		when '/help'
 			@r.help()
 		when '/play_select'
