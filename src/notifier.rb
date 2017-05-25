@@ -21,8 +21,7 @@ class Notifier
 
 				@fb.notify.global(Time.new(now.year, now.month, now.day, now.hour) + HOUR)
 
-				p 'Dozing off...'
-				sleep(HOUR)
+				sleep(Time.new(now.year, now.month, now.day, now.hour) + HOUR - Time.now + 1)
 			end
 		}
 	end
